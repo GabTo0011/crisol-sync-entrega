@@ -1,0 +1,203 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ExpenseStatus {
+  REGISTERED
+  PENDING_REVIEW
+  CANCELLED
+}
+
+enum ExpenseSource {
+  MANUAL
+  OCR
+  OFFLINE_SYNC
+}
+
+enum InvoiceStatus {
+  PENDING_ACCEPTANCE
+  ACCEPTED
+  REJECTED
+  AUTO_ACCEPTED
+}
+
+model Business {
+  id        String   @id @default(uuid())
+  name      String
+  rut       String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users         User[]
+  categories    Category[]
+  expenses      Expense[]
+  invoices      InvoiceSii[]
+  notifications Notification[]
+  reports       Report[]
+  certificates  Certificate[]
+  syncPayloads  SyncPayload[]
+}
+
+model User {
+  id           String    @id @default(uuid())
+  businessId   String
+  name         String
+  email        String    @unique
+  passwordHash String?
+  role         String    @default("OWNER")
+  status       String    @default("activo")
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id])
+
+  @@index([businessId])
+}
+
+model Category {
+  id         String   @id @default(uuid())
+  businessId String
+  name       String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  business Business  @relation(fields: [businessId], references: [id])
+  expenses Expense[]
+
+  @@unique([businessId, name])
+}
+
+model Expense {
+  id            String        @id @default(uuid())
+  businessId    String
+  categoryId    String?
+  amountTotal   Int
+  amountNet     Int?
+  amountVat     Int?
+  issueDate     DateTime
+  supplierRut   String?
+  supplierName  String?
+  description   String?
+  documentUrl   String?
+  ocrConfidence Float?
+  isManual      Boolean       @default(false)
+  source        ExpenseSource @default(MANUAL)
+  status        ExpenseStatus @default(REGISTERED)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  business Business  @relation(fields: [businessId], references: [id])
+  category Category? @relation(fields: [categoryId], references: [id])
+
+  @@index([businessId])
+  @@index([issueDate])
+}
+
+model InvoiceSii {
+  id           String        @id @default(uuid())
+  businessId   String
+  folio        String
+  supplierRut  String
+  supplierName String
+  amountNet    Int
+  amountVat    Int
+  amountTotal  Int
+  issuedAt     DateTime?
+  receivedAt   DateTime
+  status       InvoiceStatus @default(PENDING_ACCEPTANCE)
+  actionReason String?
+  actionAt     DateTime?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id])
+
+  @@index([businessId])
+  @@index([receivedAt])
+}
+
+model Notification {
+  id         String   @id @default(uuid())
+  businessId String
+  title      String
+  message    String
+  type       String
+  priority   String   @default("media")
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  business Business @relation(fields: [businessId], references: [id])
+
+  @@index([businessId])
+}
+
+enum ReportType {
+  F29
+  DEUDA
+  DOCUMENTOS
+}
+
+enum ReportFormat {
+  PDF
+  CSV
+  EXCEL
+}
+
+model Report {
+  id          String       @id @default(uuid())
+  businessId  String
+  type        ReportType
+  format      ReportFormat
+  dateFrom    DateTime?
+  dateTo      DateTime?
+  generatedBy String       @default("Sistema")
+  downloadUrl String?
+  createdAt   DateTime     @default(now())
+
+  business Business @relation(fields: [businessId], references: [id])
+
+  @@index([businessId])
+  @@index([createdAt])
+}
+
+model Certificate {
+  id         String   @id @default(uuid())
+  businessId String
+  fileName   String
+  mimeType   String   @default("application/octet-stream")
+  size       Int
+  status     String   @default("activo")
+  uploadedAt DateTime @default(now())
+
+  business Business @relation(fields: [businessId], references: [id])
+
+  @@index([businessId])
+}
+
+enum SyncStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model SyncPayload {
+  id          String     @id @default(uuid())
+  businessId  String
+  itemCount   Int
+  payload     Json
+  status      SyncStatus @default(PENDING)
+  processedAt DateTime?
+  errorLog    String?
+  createdAt   DateTime   @default(now())
+
+  business Business @relation(fields: [businessId], references: [id])
+
+  @@index([businessId])
+  @@index([status])
+}

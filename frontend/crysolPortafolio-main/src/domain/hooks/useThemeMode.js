@@ -1,0 +1,1 @@
+export { useThemeMode } from '../../../shared/context/ThemeContext'

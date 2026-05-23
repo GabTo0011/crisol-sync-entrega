@@ -1,0 +1,40 @@
+export const facturasMock = [
+  {
+    id: 'dte-9001',
+    folio: 'F-58217',
+    rutEmisor: '76.111.222-3',
+    razonSocial: 'Logistica Sur Ltda',
+    fechaEmision: '2026-04-01',
+    fechaRecepcion: '2026-04-03',
+    montoNeto: 621849,
+    iva: 118151,
+    total: 740000,
+    estado: 'aceptada',
+  },
+  {
+    id: 'dte-9002',
+    folio: 'F-58312',
+    rutEmisor: '77.998.776-5',
+    razonSocial: 'Comercial Norte SpA',
+    fechaEmision: '2026-04-08',
+    fechaRecepcion: '2026-04-10',
+    montoNeto: 327731,
+    iva: 62269,
+    total: 390000,
+    estado: 'pendiente',
+  },
+  {
+    id: 'dte-9003',
+    folio: 'F-58315',
+    rutEmisor: '96.123.421-0',
+    razonSocial: 'Retail Centro SA',
+    fechaEmision: '2026-04-07',
+    fechaRecepcion: '2026-04-09',
+    montoNeto: 840336,
+    iva: 159664,
+    total: 1000000,
+    estado: 'rechazada',
+  },
+]
+
+export const invoiceStates = ['pendiente', 'aceptada', 'rechazada']

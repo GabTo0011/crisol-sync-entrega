@@ -1,0 +1,127 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ExpenseStatus {
+  REGISTERED
+  PENDING_REVIEW
+  CANCELLED
+}
+
+enum ExpenseSource {
+  MANUAL
+  OCR
+  OFFLINE_SYNC
+}
+
+enum InvoiceStatus {
+  PENDING_ACCEPTANCE
+  ACCEPTED
+  REJECTED
+  AUTO_ACCEPTED
+}
+
+model Business {
+  id        String   @id @default(uuid())
+  name      String
+  rut       String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users         User[]
+  categories    Category[]
+  expenses      Expense[]
+  invoices      InvoiceSii[]
+  notifications Notification[]
+}
+
+model User {
+  id         String   @id @default(uuid())
+  businessId String
+  name       String
+  email      String   @unique
+  role       String   @default("OWNER")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id])
+}
+
+model Category {
+  id         String   @id @default(uuid())
+  businessId String
+  name       String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  business Business  @relation(fields: [businessId], references: [id])
+  expenses Expense[]
+
+  @@unique([businessId, name])
+}
+
+model Expense {
+  id           String        @id @default(uuid())
+  businessId   String
+  categoryId   String?
+  amountTotal  Int
+  amountNet    Int?
+  amountVat    Int?
+  issueDate    DateTime
+  supplierRut  String?
+  supplierName String?
+  description  String?
+  documentUrl  String?
+  isManual     Boolean       @default(false)
+  source       ExpenseSource @default(MANUAL)
+  status       ExpenseStatus @default(REGISTERED)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  business Business  @relation(fields: [businessId], references: [id])
+  category Category? @relation(fields: [categoryId], references: [id])
+
+  @@index([businessId])
+  @@index([issueDate])
+}
+
+model InvoiceSii {
+  id           String        @id @default(uuid())
+  businessId   String
+  folio        String
+  supplierRut  String
+  supplierName String
+  amountNet    Int
+  amountVat    Int
+  amountTotal  Int
+  receivedAt   DateTime
+  status       InvoiceStatus @default(PENDING_ACCEPTANCE)
+  actionReason String?
+  actionAt     DateTime?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id])
+
+  @@index([businessId])
+  @@index([receivedAt])
+}
+
+model Notification {
+  id         String   @id @default(uuid())
+  businessId String
+  title      String
+  message    String
+  type       String
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  business Business @relation(fields: [businessId], references: [id])
+
+  @@index([businessId])
+}
