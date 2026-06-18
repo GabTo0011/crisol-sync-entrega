@@ -1,4 +1,5 @@
 import { ConflictException, UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as bcrypt from 'bcrypt';
@@ -12,12 +13,17 @@ const mockPrisma = {
     update: jest.fn(),
   },
   business: {
+    findUnique: jest.fn(),
     create: jest.fn(),
   },
 };
 
 const mockJwtService = {
   sign: jest.fn().mockReturnValue('mock-jwt-token'),
+};
+
+const mockConfigService = {
+  get: jest.fn().mockReturnValue(undefined),
 };
 
 describe('AuthService', () => {
@@ -29,6 +35,7 @@ describe('AuthService', () => {
         AuthService,
         { provide: PrismaService, useValue: mockPrisma },
         { provide: JwtService, useValue: mockJwtService },
+        { provide: ConfigService, useValue: mockConfigService },
       ],
     }).compile();
 
