@@ -8,6 +8,7 @@ import {
 import { AuthService } from './auth.service';
 import { CurrentUser } from './decorators/current-user.decorator';
 import type { AuthenticatedUser } from './decorators/current-user.decorator';
+import { GoogleAuthDto } from './dto/google-auth.dto';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -31,6 +32,15 @@ export class AuthController {
   @ApiResponse({ status: 409, description: 'El email ya está registrado.' })
   register(@Body() dto: RegisterDto) {
     return this.authService.register(dto);
+  }
+
+  @Post('google')
+  @ApiOperation({ summary: 'Autenticación con Google', description: 'Valida el token de Google Identity Services y crea/actualiza el usuario. Retorna un JWT.' })
+  @ApiResponse({ status: 201, description: 'Login exitoso. Retorna access_token y datos del usuario.' })
+  @ApiResponse({ status: 400, description: 'Token inválido o Google OAuth no configurado.' })
+  @ApiResponse({ status: 401, description: 'Cuenta bloqueada.' })
+  googleAuth(@Body() dto: GoogleAuthDto) {
+    return this.authService.googleAuth(dto);
   }
 
   @Get('me')

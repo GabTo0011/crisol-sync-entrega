@@ -10,7 +10,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   app.enableCors({
-    origin: process.env.FRONTEND_URL?.split(',') ?? ['http://localhost:5173'],
+    origin: true, // Acepta cualquier origen temporalmente para depuración
     credentials: true,
   });
 
