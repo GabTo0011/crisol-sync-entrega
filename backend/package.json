@@ -97,6 +97,11 @@
       "!src/generated/**"
     ],
     "coverageDirectory": "coverage",
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "json-summary"
+    ],
     "testEnvironment": "node",
     "moduleDirectories": [
       "node_modules",
