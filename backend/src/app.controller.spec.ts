@@ -6,17 +6,26 @@ describe('AppController', () => {
   let appController: AppController;
 
   beforeEach(async () => {
-    const app: TestingModule = await Test.createTestingModule({
+    const module: TestingModule = await Test.createTestingModule({
       controllers: [AppController],
       providers: [AppService],
     }).compile();
 
-    appController = app.get<AppController>(AppController);
+    appController = module.get<AppController>(AppController);
   });
 
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
-    });
+  it('debe estar definido', () => {
+    expect(appController).toBeDefined();
+  });
+
+  it('getHello debe retornar "Hello World!"', () => {
+    expect(appController.getHello()).toBe('Hello World!');
+  });
+
+  it('getHealth debe retornar status ok', () => {
+    const result = appController.getHealth();
+    expect(result.status).toBe('ok');
+    expect(result.service).toBe('crisol-sync-backend');
+    expect(result).toHaveProperty('timestamp');
   });
 });

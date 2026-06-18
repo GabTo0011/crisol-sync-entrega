@@ -32,8 +32,24 @@ describe('ReportsService', () => {
     it('debe retornar 3 tipos de reporte', () => {
       const types = service.getTypes();
       expect(types).toHaveLength(3);
-      expect(types[0]).toHaveProperty('id');
-      expect(types[0]).toHaveProperty('label');
+    });
+
+    it('debe incluir F29, DEUDA y DOCUMENTOS', () => {
+      const types = service.getTypes();
+      const ids = types.map((t) => t.id);
+      expect(ids).toContain('f29');
+      expect(ids).toContain('deuda');
+      expect(ids).toContain('documentos');
+    });
+
+    it('cada tipo debe tener id y label', () => {
+      const types = service.getTypes();
+      for (const type of types) {
+        expect(type).toHaveProperty('id');
+        expect(type).toHaveProperty('label');
+        expect(typeof type.id).toBe('string');
+        expect(typeof type.label).toBe('string');
+      }
     });
   });
 
@@ -54,6 +70,20 @@ describe('ReportsService', () => {
         downloadUrl: '#',
       });
     });
+
+    it('debe filtrar por businessId', async () => {
+      mockPrisma.report.findMany.mockResolvedValue([]);
+      await service.getHistory('biz-1');
+      expect(mockPrisma.report.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { businessId: 'biz-1' } }),
+      );
+    });
+
+    it('debe retornar array vacío si no hay historial', async () => {
+      mockPrisma.report.findMany.mockResolvedValue([]);
+      const result = await service.getHistory('biz-1');
+      expect(result).toEqual([]);
+    });
   });
 
   describe('generate', () => {
@@ -72,12 +102,31 @@ describe('ReportsService', () => {
         formato: 'PDF' as any,
         desde: '2026-04-01',
         hasta: '2026-04-30',
+        generadoPor: 'Contabilidad',
       });
 
-      expect(result).toHaveProperty('id');
+      expect(result).toHaveProperty('id', 'rep-1');
       expect(result).toHaveProperty('tipo', 'f29');
       expect(result).toHaveProperty('formato', 'PDF');
+      expect(result).toHaveProperty('desde', '2026-04-01');
+      expect(result).toHaveProperty('hasta', '2026-04-30');
       expect(result).toHaveProperty('downloadUrl');
+    });
+
+    it('debe persistir el reporte en la base de datos', async () => {
+      mockPrisma.report.create.mockResolvedValue({
+        id: 'rep-2', type: 'DEUDA', format: 'CSV', createdAt: new Date(), downloadUrl: '#',
+      });
+
+      await service.generate({
+        businessId: 'biz-1',
+        tipo: 'DEUDA' as any,
+        formato: 'CSV' as any,
+      });
+
+      expect(mockPrisma.report.create).toHaveBeenCalledTimes(1);
+      const createCall = mockPrisma.report.create.mock.calls[0][0];
+      expect(createCall.data.businessId).toBe('biz-1');
     });
   });
 });

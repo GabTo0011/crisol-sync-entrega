@@ -12,8 +12,10 @@ export const envValidationSchema = Joi.object({
   DATABASE_URL: Joi.string().required(),
   DIRECT_URL: Joi.string().optional(),
 
-  SUPABASE_URL: Joi.string().uri().optional(),
-  SUPABASE_SERVICE_ROLE_KEY: Joi.string().optional(),
+  // SUPABASE_URL: Joi.string().uri().optional(),
+  // SUPABASE_SERVICE_ROLE_KEY: Joi.string().optional(),
+  SUPABASE_URL: Joi.string().uri().required(),
+  SUPABASE_SERVICE_ROLE_KEY: Joi.string().required(),
 
   AZURE_OCR_ENDPOINT: Joi.string().uri().optional(),
   AZURE_OCR_KEY: Joi.string().optional(),
