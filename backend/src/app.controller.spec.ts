@@ -21,4 +21,11 @@ describe('AppController', () => {
   it('getHello debe retornar "Hello World!"', () => {
     expect(appController.getHello()).toBe('Hello World!');
   });
+
+  it('getHealth debe retornar status ok', () => {
+    const result = appController.getHealth();
+    expect(result.status).toBe('ok');
+    expect(result.service).toBe('crisol-sync-backend');
+    expect(result).toHaveProperty('timestamp');
+  });
 });
