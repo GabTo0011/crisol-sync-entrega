@@ -52,6 +52,42 @@ describe('TaxService', () => {
       expect(result[0]).toHaveProperty('estado', 'pendiente');
       expect(result[0]).toHaveProperty('diasRestantes');
     });
+
+    it('debe filtrar por businessId', async () => {
+      mockPrisma.invoiceSii.findMany.mockResolvedValue([]);
+      await service.findAll('biz-1');
+      expect(mockPrisma.invoiceSii.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { businessId: 'biz-1' } }),
+      );
+    });
+
+    it('debe retornar array vacío si no hay facturas', async () => {
+      mockPrisma.invoiceSii.findMany.mockResolvedValue([]);
+      const result = await service.findAll('biz-1');
+      expect(result).toEqual([]);
+    });
+  });
+
+  describe('findOne', () => {
+    it('debe retornar factura en formato frontend', async () => {
+      mockPrisma.invoiceSii.findFirst.mockResolvedValue(mockInvoice);
+      const result = await service.findOne('1', 'biz-1');
+      expect(result).toHaveProperty('folio', 'F-001');
+      expect(result).toHaveProperty('estado', 'pendiente');
+    });
+
+    it('debe lanzar NotFoundException si no existe', async () => {
+      mockPrisma.invoiceSii.findFirst.mockResolvedValue(null);
+      await expect(service.findOne('fake', 'biz-1')).rejects.toThrow(NotFoundException);
+    });
+
+    it('debe filtrar por id Y businessId', async () => {
+      mockPrisma.invoiceSii.findFirst.mockResolvedValue(mockInvoice);
+      await service.findOne('inv-1', 'biz-1');
+      expect(mockPrisma.invoiceSii.findFirst).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { id: 'inv-1', businessId: 'biz-1' } }),
+      );
+    });
   });
 
   describe('accept', () => {
@@ -63,9 +99,29 @@ describe('TaxService', () => {
       expect(result.estado).toBe('aceptada');
     });
 
+    it('debe guardar actionReason y actionAt', async () => {
+      mockPrisma.invoiceSii.findFirst.mockResolvedValue(mockInvoice);
+      mockPrisma.invoiceSii.update.mockResolvedValue({ ...mockInvoice, status: 'ACCEPTED' });
+
+      await service.accept('1', 'biz-1', 'Verificada');
+      const updateCall = mockPrisma.invoiceSii.update.mock.calls[0][0];
+      expect(updateCall.data.actionReason).toBe('Verificada');
+      expect(updateCall.data.actionAt).toBeInstanceOf(Date);
+    });
+
     it('debe lanzar BadRequestException si ya fue aceptada', async () => {
       mockPrisma.invoiceSii.findFirst.mockResolvedValue({ ...mockInvoice, status: 'ACCEPTED' });
       await expect(service.accept('1', 'biz-1')).rejects.toThrow(BadRequestException);
+    });
+
+    it('debe lanzar BadRequestException si ya fue rechazada', async () => {
+      mockPrisma.invoiceSii.findFirst.mockResolvedValue({ ...mockInvoice, status: 'REJECTED' });
+      await expect(service.accept('1', 'biz-1')).rejects.toThrow(BadRequestException);
+    });
+
+    it('debe lanzar NotFoundException si no existe', async () => {
+      mockPrisma.invoiceSii.findFirst.mockResolvedValue(null);
+      await expect(service.accept('fake', 'biz-1')).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -77,6 +133,21 @@ describe('TaxService', () => {
       const result = await service.reject('1', 'biz-1', 'Datos incorrectos');
       expect(result.estado).toBe('rechazada');
     });
+
+    it('debe lanzar BadRequestException si ya fue aceptada', async () => {
+      mockPrisma.invoiceSii.findFirst.mockResolvedValue({ ...mockInvoice, status: 'ACCEPTED' });
+      await expect(service.reject('1', 'biz-1')).rejects.toThrow(BadRequestException);
+    });
+
+    it('debe lanzar BadRequestException si ya fue rechazada', async () => {
+      mockPrisma.invoiceSii.findFirst.mockResolvedValue({ ...mockInvoice, status: 'REJECTED' });
+      await expect(service.reject('1', 'biz-1')).rejects.toThrow(BadRequestException);
+    });
+
+    it('debe lanzar NotFoundException si no existe', async () => {
+      mockPrisma.invoiceSii.findFirst.mockResolvedValue(null);
+      await expect(service.reject('fake', 'biz-1')).rejects.toThrow(NotFoundException);
+    });
   });
 
   describe('sync', () => {
@@ -86,12 +157,15 @@ describe('TaxService', () => {
 
       const result = await service.sync('biz-1');
       expect(result.newInvoices).toBe(3);
+      expect(result.totalInvoices).toBe(3);
+      expect(result).toHaveProperty('syncedAt');
     });
 
-    it('no debe crear si ya existen', async () => {
+    it('no debe crear si ya existen facturas', async () => {
       mockPrisma.invoiceSii.count.mockResolvedValue(5);
       const result = await service.sync('biz-1');
       expect(result.newInvoices).toBe(0);
+      expect(result.totalInvoices).toBe(5);
       expect(mockPrisma.invoiceSii.create).not.toHaveBeenCalled();
     });
   });
