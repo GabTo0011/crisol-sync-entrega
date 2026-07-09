@@ -6,6 +6,6 @@ node_modules
 
 .kiro
 AGENTS.md
-settings
+/settings
 docs
 
