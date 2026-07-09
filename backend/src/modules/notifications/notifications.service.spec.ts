@@ -3,6 +3,17 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotificationsService } from './notifications.service';
 import { PrismaService } from '../../prisma/prisma.service';
 
+const mockNotification = {
+  id: '1',
+  type: 'vencimiento',
+  title: 'Factura por vencer',
+  message: 'Quedan 2 dias',
+  createdAt: new Date('2026-04-17T09:10:00Z'),
+  read: false,
+  priority: 'alta',
+  businessId: 'biz-1',
+};
+
 const mockPrisma = {
   notification: {
     findMany: jest.fn(),
@@ -32,9 +43,7 @@ describe('NotificationsService', () => {
 
   describe('findAll', () => {
     it('debe retornar notificaciones mapeadas al formato frontend', async () => {
-      mockPrisma.notification.findMany.mockResolvedValue([
-        { id: '1', type: 'vencimiento', title: 'Factura por vencer', message: 'Quedan 2 dias', createdAt: new Date('2026-04-17T09:10:00Z'), read: false, priority: 'alta' },
-      ]);
+      mockPrisma.notification.findMany.mockResolvedValue([mockNotification]);
 
       const result = await service.findAll('biz-1');
 
@@ -48,22 +57,61 @@ describe('NotificationsService', () => {
         prioridad: 'alta',
       });
     });
+
+    it('debe filtrar por businessId', async () => {
+      mockPrisma.notification.findMany.mockResolvedValue([]);
+      await service.findAll('biz-1');
+      expect(mockPrisma.notification.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { businessId: 'biz-1' } }),
+      );
+    });
+
+    it('debe ordenar por fecha descendente', async () => {
+      mockPrisma.notification.findMany.mockResolvedValue([]);
+      await service.findAll('biz-1');
+      expect(mockPrisma.notification.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({ orderBy: { createdAt: 'desc' } }),
+      );
+    });
+
+    it('debe retornar array vacío si no hay notificaciones', async () => {
+      mockPrisma.notification.findMany.mockResolvedValue([]);
+      const result = await service.findAll('biz-1');
+      expect(result).toEqual([]);
+    });
   });
 
   describe('markAsRead', () => {
     it('debe marcar como leída y retornar formato frontend', async () => {
-      mockPrisma.notification.findFirst.mockResolvedValue({ id: '1', businessId: 'biz-1' });
+      mockPrisma.notification.findFirst.mockResolvedValue(mockNotification);
       mockPrisma.notification.update.mockResolvedValue({
-        id: '1', type: 'vencimiento', title: 'Test', message: 'Msg', createdAt: new Date('2026-04-17'), read: true, priority: 'alta',
+        ...mockNotification,
+        read: true,
       });
 
       const result = await service.markAsRead('1', 'biz-1');
       expect(result.leida).toBe(true);
+      expect(result).toHaveProperty('tipo', 'vencimiento');
     });
 
     it('debe lanzar NotFoundException si no existe', async () => {
       mockPrisma.notification.findFirst.mockResolvedValue(null);
-      await expect(service.markAsRead('fake', 'biz-1')).rejects.toThrow(NotFoundException);
+      await expect(service.markAsRead('fake', 'biz-1')).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it('debe filtrar por id Y businessId', async () => {
+      mockPrisma.notification.findFirst.mockResolvedValue(mockNotification);
+      mockPrisma.notification.update.mockResolvedValue({
+        ...mockNotification,
+        read: true,
+      });
+
+      await service.markAsRead('1', 'biz-1');
+      expect(mockPrisma.notification.findFirst).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { id: '1', businessId: 'biz-1' } }),
+      );
     });
   });
 });

@@ -48,6 +48,7 @@ model User {
   name         String
   email        String    @unique
   passwordHash String?
+  googleId     String?   @unique
   role         String    @default("OWNER")
   status       String    @default("activo")
   lastLoginAt  DateTime?

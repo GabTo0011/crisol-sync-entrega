@@ -4,19 +4,30 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { OAuth2Client } from 'google-auth-library';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../../prisma/prisma.service';
+import { GoogleAuthDto } from './dto/google-auth.dto';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { JwtPayload } from './strategies/jwt.strategy';
 
 @Injectable()
 export class AuthService {
+  private googleClient: OAuth2Client;
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
-  ) {}
+    private readonly configService: ConfigService,
+  ) {
+    const googleClientId = this.configService.get<string>('GOOGLE_CLIENT_ID');
+    if (googleClientId) {
+      this.googleClient = new OAuth2Client(googleClientId);
+    }
+  }
 
   async login(dto: LoginDto) {
     const user = await this.prisma.user.findUnique({
@@ -27,13 +38,18 @@ export class AuthService {
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
-    const isPasswordValid = await bcrypt.compare(dto.password, user.passwordHash);
+    const isPasswordValid = await bcrypt.compare(
+      dto.password,
+      user.passwordHash,
+    );
     if (!isPasswordValid) {
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
     if (user.status === 'bloqueado') {
-      throw new UnauthorizedException('Tu cuenta está bloqueada. Contacta al administrador.');
+      throw new UnauthorizedException(
+        'Tu cuenta está bloqueada. Contacta al administrador.',
+      );
     }
 
     // Actualizar lastLoginAt
@@ -80,7 +96,9 @@ export class AuthService {
         where: { id: businessId },
       });
       if (!existingBusiness) {
-        throw new BadRequestException(`El negocio con id "${businessId}" no existe`);
+        throw new BadRequestException(
+          `El negocio con id "${businessId}" no existe`,
+        );
       }
     } else {
       // Crear nuevo business
@@ -143,7 +161,92 @@ export class AuthService {
     };
   }
 
-  private generateToken(user: { id: string; email: string; businessId: string; role: string }): string {
+  async googleAuth(dto: GoogleAuthDto) {
+    const googleClientId = this.configService.get<string>('GOOGLE_CLIENT_ID');
+    console.log('GOOGLE_CLIENT_ID from config:', googleClientId);
+    console.log('googleClient exists:', !!this.googleClient);
+
+    if (!this.googleClient) {
+      throw new BadRequestException(
+        'Google OAuth no está configurado. Falta GOOGLE_CLIENT_ID en .env',
+      );
+    }
+
+    // Verificar el token con Google
+    const ticket = await this.googleClient.verifyIdToken({
+      idToken: dto.credential,
+      audience: this.configService.get<string>('GOOGLE_CLIENT_ID'),
+    });
+
+    const payload = ticket.getPayload();
+    if (!payload || !payload.email) {
+      throw new UnauthorizedException('Token de Google inválido');
+    }
+
+    const email = payload.email.toLowerCase();
+    const name = payload.name || 'Usuario Google';
+    const googleId = payload.sub;
+
+    // Buscar usuario existente por email o por googleId
+    let user = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (user) {
+      // Usuario existe, actualizar si es necesario
+      if (user.status === 'bloqueado') {
+        throw new UnauthorizedException(
+          'Tu cuenta está bloqueada. Contacta al administrador.',
+        );
+      }
+
+      // Actualizar lastLoginAt
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: { lastLoginAt: new Date() },
+      });
+    } else {
+      // Usuario nuevo, crearlo
+      // Crear un business por defecto
+      const business = await this.prisma.business.create({
+        data: {
+          name: `${name}'s Business`,
+          rut: `temp-${Date.now()}`,
+        },
+      });
+
+      user = await this.prisma.user.create({
+        data: {
+          businessId: business.id,
+          name: name.trim(),
+          email,
+          googleId,
+          role: 'OWNER',
+          status: 'activo',
+        },
+      });
+    }
+
+    const token = this.generateToken(user);
+
+    return {
+      access_token: token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        businessId: user.businessId,
+      },
+    };
+  }
+
+  private generateToken(user: {
+    id: string;
+    email: string;
+    businessId: string;
+    role: string;
+  }): string {
     const payload: JwtPayload = {
       sub: user.id,
       email: user.email,

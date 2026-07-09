@@ -1,15 +1,46 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InvoiceStatus } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
-import { mapInvoiceToFrontend, mapInvoicesToFrontend } from '../../common/mappers';
+import {
+  mapInvoiceToFrontend,
+  mapInvoicesToFrontend,
+} from '../../common/mappers';
 
 // TODO: Integrar con API real del SII cuando esté disponible.
 
 /** Datos simulados para sync */
 const SIMULATED_INVOICES = [
-  { folio: 'F-58400', supplierRut: '76.111.222-3', supplierName: 'Logistica Sur Ltda', amountNet: 621849, amountVat: 118151, amountTotal: 740000, issuedAt: '2026-04-01' },
-  { folio: 'F-58401', supplierRut: '77.998.776-5', supplierName: 'Comercial Norte SpA', amountNet: 327731, amountVat: 62269, amountTotal: 390000, issuedAt: '2026-04-08' },
-  { folio: 'F-58402', supplierRut: '96.123.421-0', supplierName: 'Retail Centro SA', amountNet: 840336, amountVat: 159664, amountTotal: 1000000, issuedAt: '2026-04-07' },
+  {
+    folio: 'F-58400',
+    supplierRut: '76.111.222-3',
+    supplierName: 'Logistica Sur Ltda',
+    amountNet: 621849,
+    amountVat: 118151,
+    amountTotal: 740000,
+    issuedAt: '2026-04-01',
+  },
+  {
+    folio: 'F-58401',
+    supplierRut: '77.998.776-5',
+    supplierName: 'Comercial Norte SpA',
+    amountNet: 327731,
+    amountVat: 62269,
+    amountTotal: 390000,
+    issuedAt: '2026-04-08',
+  },
+  {
+    folio: 'F-58402',
+    supplierRut: '96.123.421-0',
+    supplierName: 'Retail Centro SA',
+    amountNet: 840336,
+    amountVat: 159664,
+    amountTotal: 1000000,
+    issuedAt: '2026-04-07',
+  },
 ];
 
 @Injectable()
@@ -80,7 +111,9 @@ export class TaxService {
   }
 
   async sync(businessId: string) {
-    const existing = await this.prisma.invoiceSii.count({ where: { businessId } });
+    const existing = await this.prisma.invoiceSii.count({
+      where: { businessId },
+    });
 
     let created = 0;
 

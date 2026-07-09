@@ -1,5 +1,11 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { OptionalAuthGuard } from '../../common/guards/optional-auth.guard';
 import { BusinessGuard } from '../../common/guards/business.guard';
 import { BusinessId } from '../../common/decorators/business-id.decorator';
@@ -22,7 +28,11 @@ export class ReportsController {
 
   @Get('history')
   @ApiOperation({ summary: 'Obtener historial de reportes generados' })
-  @ApiQuery({ name: 'businessId', required: false, description: 'UUID del negocio (opcional si se usa JWT)' })
+  @ApiQuery({
+    name: 'businessId',
+    required: false,
+    description: 'UUID del negocio (opcional si se usa JWT)',
+  })
   @ApiResponse({ status: 200, description: 'Historial de reportes retornado.' })
   getHistory(@BusinessId() businessId: string) {
     return this.reportsService.getHistory(businessId);

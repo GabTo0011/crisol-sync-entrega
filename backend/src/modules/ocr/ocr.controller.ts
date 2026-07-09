@@ -37,7 +37,11 @@ export class OcrController {
       'Retorna los datos extraídos SIN persistir (el frontend decide si guardar).',
   })
   @ApiConsumes('multipart/form-data')
-  @ApiQuery({ name: 'businessId', required: false, description: 'UUID del negocio (opcional si se usa JWT)' })
+  @ApiQuery({
+    name: 'businessId',
+    required: false,
+    description: 'UUID del negocio (opcional si se usa JWT)',
+  })
   @ApiBody({
     description: 'Imagen del documento a procesar (JPG, PNG o PDF)',
     schema: {
@@ -62,7 +66,10 @@ export class OcrController {
       },
     },
   })
-  @ApiResponse({ status: 400, description: 'Archivo no proporcionado o formato inválido.' })
+  @ApiResponse({
+    status: 400,
+    description: 'Archivo no proporcionado o formato inválido.',
+  })
   processReceipt(@UploadedFile() file: Express.Multer.File) {
     return this.ocrService.processReceipt(file);
   }
@@ -76,7 +83,11 @@ export class OcrController {
       'Flujo completo en un solo request: imagen → OCR → DB.',
   })
   @ApiConsumes('multipart/form-data')
-  @ApiQuery({ name: 'businessId', required: false, description: 'UUID del negocio (opcional si se usa JWT)' })
+  @ApiQuery({
+    name: 'businessId',
+    required: false,
+    description: 'UUID del negocio (opcional si se usa JWT)',
+  })
   @ApiBody({
     description: 'Imagen del documento',
     schema: {
@@ -87,8 +98,14 @@ export class OcrController {
       required: ['file'],
     },
   })
-  @ApiResponse({ status: 201, description: 'Gasto creado desde OCR exitosamente.' })
-  @ApiResponse({ status: 400, description: 'Archivo no proporcionado o datos no extraíbles.' })
+  @ApiResponse({
+    status: 201,
+    description: 'Gasto creado desde OCR exitosamente.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Archivo no proporcionado o datos no extraíbles.',
+  })
   processAndSave(
     @UploadedFile() file: Express.Multer.File,
     @BusinessId() businessId: string,

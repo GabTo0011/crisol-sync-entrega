@@ -5,7 +5,6 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
-  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -32,7 +31,11 @@ export class TaxController {
 
   @Get()
   @ApiOperation({ summary: 'Listar facturas DTE de un negocio' })
-  @ApiQuery({ name: 'businessId', required: false, description: 'UUID del negocio (opcional si se usa JWT)' })
+  @ApiQuery({
+    name: 'businessId',
+    required: false,
+    description: 'UUID del negocio (opcional si se usa JWT)',
+  })
   @ApiResponse({ status: 200, description: 'Lista de facturas retornada.' })
   findAll(@BusinessId() businessId: string) {
     return this.taxService.findAll(businessId);
@@ -41,7 +44,11 @@ export class TaxController {
   @Get(':id')
   @ApiOperation({ summary: 'Obtener una factura por ID' })
   @ApiParam({ name: 'id', description: 'UUID de la factura' })
-  @ApiQuery({ name: 'businessId', required: false, description: 'UUID del negocio (opcional si se usa JWT)' })
+  @ApiQuery({
+    name: 'businessId',
+    required: false,
+    description: 'UUID del negocio (opcional si se usa JWT)',
+  })
   @ApiResponse({ status: 200, description: 'Factura encontrada.' })
   @ApiResponse({ status: 404, description: 'Factura no encontrada.' })
   findOne(
@@ -61,9 +68,16 @@ export class TaxController {
   @Post(':id/accept')
   @ApiOperation({ summary: 'Aceptar una factura' })
   @ApiParam({ name: 'id', description: 'UUID de la factura' })
-  @ApiQuery({ name: 'businessId', required: false, description: 'UUID del negocio (opcional si se usa JWT)' })
+  @ApiQuery({
+    name: 'businessId',
+    required: false,
+    description: 'UUID del negocio (opcional si se usa JWT)',
+  })
   @ApiResponse({ status: 201, description: 'Factura aceptada.' })
-  @ApiResponse({ status: 400, description: 'Factura no está en estado pendiente.' })
+  @ApiResponse({
+    status: 400,
+    description: 'Factura no está en estado pendiente.',
+  })
   accept(
     @Param('id', ParseUUIDPipe) id: string,
     @BusinessId() businessId: string,
@@ -75,9 +89,16 @@ export class TaxController {
   @Post(':id/reject')
   @ApiOperation({ summary: 'Rechazar una factura' })
   @ApiParam({ name: 'id', description: 'UUID de la factura' })
-  @ApiQuery({ name: 'businessId', required: false, description: 'UUID del negocio (opcional si se usa JWT)' })
+  @ApiQuery({
+    name: 'businessId',
+    required: false,
+    description: 'UUID del negocio (opcional si se usa JWT)',
+  })
   @ApiResponse({ status: 201, description: 'Factura rechazada.' })
-  @ApiResponse({ status: 400, description: 'Factura no está en estado pendiente.' })
+  @ApiResponse({
+    status: 400,
+    description: 'Factura no está en estado pendiente.',
+  })
   reject(
     @Param('id', ParseUUIDPipe) id: string,
     @BusinessId() businessId: string,

@@ -51,7 +51,12 @@ export class SyncService {
     }
 
     // 3. Actualizar registro de sync
-    const finalStatus = errors.length === 0 ? SyncStatus.COMPLETED : (processed === 0 ? SyncStatus.FAILED : SyncStatus.COMPLETED);
+    const finalStatus =
+      errors.length === 0
+        ? SyncStatus.COMPLETED
+        : processed === 0
+          ? SyncStatus.FAILED
+          : SyncStatus.COMPLETED;
 
     await this.prisma.syncPayload.update({
       where: { id: syncRecord.id },
@@ -73,7 +78,10 @@ export class SyncService {
     };
   }
 
-  private async processItem(businessId: string, item: SyncExpenseItem): Promise<void> {
+  private async processItem(
+    businessId: string,
+    item: SyncExpenseItem,
+  ): Promise<void> {
     // Resolver categoría por nombre (crear si no existe)
     let categoryId: string | null = null;
 

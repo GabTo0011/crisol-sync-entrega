@@ -12,6 +12,8 @@ export const envValidationSchema = Joi.object({
   DATABASE_URL: Joi.string().required(),
   DIRECT_URL: Joi.string().optional(),
 
+  // SUPABASE_URL: Joi.string().uri().optional(),
+  // SUPABASE_SERVICE_ROLE_KEY: Joi.string().optional(),
   SUPABASE_URL: Joi.string().uri().required(),
   SUPABASE_SERVICE_ROLE_KEY: Joi.string().required(),
 
@@ -21,6 +23,7 @@ export const envValidationSchema = Joi.object({
   GOOGLE_DRIVE_FOLDER_ID: Joi.string().optional(),
   GOOGLE_CLIENT_EMAIL: Joi.string().optional(),
   GOOGLE_PRIVATE_KEY: Joi.string().optional(),
+  GOOGLE_CLIENT_ID: Joi.string().optional(),
 
   JWT_SECRET: Joi.string().required(),
   JWT_EXPIRES_IN: Joi.string().default('7d'),

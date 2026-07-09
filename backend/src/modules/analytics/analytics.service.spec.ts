@@ -39,17 +39,28 @@ describe('AnalyticsService', () => {
     it('debe retornar métricas completas del dashboard', async () => {
       mockPrisma.expense.aggregate
         .mockResolvedValueOnce({ _sum: { amountTotal: 1250000 } }) // totalExpenses
-        .mockResolvedValueOnce({ _sum: { amountTotal: 348000 } })  // monthlyExpenses
-        .mockResolvedValueOnce({ _sum: { amountVat: 66120 } });    // vatCredit
+        .mockResolvedValueOnce({ _sum: { amountTotal: 348000 } }) // monthlyExpenses
+        .mockResolvedValueOnce({ _sum: { amountVat: 66120 } }); // vatCredit
 
       mockPrisma.invoiceSii.count.mockResolvedValue(3);
 
       mockPrisma.expense.findMany.mockResolvedValue([
-        { id: '1', supplierName: 'Test', amountTotal: 48990, issueDate: new Date('2026-05-20'), status: 'REGISTERED', category: { name: 'Insumos' } },
+        {
+          id: '1',
+          supplierName: 'Test',
+          amountTotal: 48990,
+          issueDate: new Date('2026-05-20'),
+          status: 'REGISTERED',
+          category: { name: 'Insumos' },
+        },
       ]);
 
       mockPrisma.expense.groupBy.mockResolvedValue([
-        { categoryId: 'cat-1', _sum: { amountTotal: 550000 }, _count: { id: 5 } },
+        {
+          categoryId: 'cat-1',
+          _sum: { amountTotal: 550000 },
+          _count: { id: 5 },
+        },
       ]);
 
       mockPrisma.category.findMany.mockResolvedValue([

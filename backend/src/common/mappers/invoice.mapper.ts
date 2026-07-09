@@ -20,12 +20,15 @@ function calculateDaysRemaining(receivedAt: Date | string): number {
 }
 
 export function mapInvoiceToFrontend(invoice: any) {
-  const receivedAt = invoice.receivedAt instanceof Date
-    ? invoice.receivedAt
-    : new Date(invoice.receivedAt);
+  const receivedAt =
+    invoice.receivedAt instanceof Date
+      ? invoice.receivedAt
+      : new Date(invoice.receivedAt);
 
   const issuedAt = invoice.issuedAt
-    ? (invoice.issuedAt instanceof Date ? invoice.issuedAt : new Date(invoice.issuedAt))
+    ? invoice.issuedAt instanceof Date
+      ? invoice.issuedAt
+      : new Date(invoice.issuedAt)
     : receivedAt;
 
   return {
