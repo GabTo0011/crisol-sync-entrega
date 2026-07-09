@@ -1,5 +1,11 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { OptionalAuthGuard } from '../../common/guards/optional-auth.guard';
 import { BusinessGuard } from '../../common/guards/business.guard';
 import { BusinessId } from '../../common/decorators/business-id.decorator';
@@ -14,8 +20,15 @@ export class AnalyticsController {
 
   @Get('dashboard')
   @ApiOperation({ summary: 'Obtener métricas del dashboard' })
-  @ApiQuery({ name: 'businessId', required: false, description: 'UUID del negocio (opcional si se usa JWT)' })
-  @ApiResponse({ status: 200, description: 'Métricas del dashboard retornadas.' })
+  @ApiQuery({
+    name: 'businessId',
+    required: false,
+    description: 'UUID del negocio (opcional si se usa JWT)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Métricas del dashboard retornadas.',
+  })
   getDashboard(@BusinessId() businessId: string) {
     return this.analyticsService.getDashboard(businessId);
   }

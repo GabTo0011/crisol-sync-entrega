@@ -13,7 +13,12 @@ describe('OptionalAuthGuard', () => {
 
   describe('handleRequest', () => {
     it('debe retornar el usuario si existe', () => {
-      const user = { userId: 'u1', email: 'x@x.cl', businessId: 'biz-1', role: 'OWNER' };
+      const user = {
+        userId: 'u1',
+        email: 'x@x.cl',
+        businessId: 'biz-1',
+        role: 'OWNER',
+      };
       const result = guard.handleRequest(null, user);
       expect(result).toBe(user);
     });

@@ -38,13 +38,18 @@ export class AuthService {
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
-    const isPasswordValid = await bcrypt.compare(dto.password, user.passwordHash);
+    const isPasswordValid = await bcrypt.compare(
+      dto.password,
+      user.passwordHash,
+    );
     if (!isPasswordValid) {
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
     if (user.status === 'bloqueado') {
-      throw new UnauthorizedException('Tu cuenta está bloqueada. Contacta al administrador.');
+      throw new UnauthorizedException(
+        'Tu cuenta está bloqueada. Contacta al administrador.',
+      );
     }
 
     // Actualizar lastLoginAt
@@ -91,7 +96,9 @@ export class AuthService {
         where: { id: businessId },
       });
       if (!existingBusiness) {
-        throw new BadRequestException(`El negocio con id "${businessId}" no existe`);
+        throw new BadRequestException(
+          `El negocio con id "${businessId}" no existe`,
+        );
       }
     } else {
       // Crear nuevo business
@@ -160,7 +167,9 @@ export class AuthService {
     console.log('googleClient exists:', !!this.googleClient);
 
     if (!this.googleClient) {
-      throw new BadRequestException('Google OAuth no está configurado. Falta GOOGLE_CLIENT_ID en .env');
+      throw new BadRequestException(
+        'Google OAuth no está configurado. Falta GOOGLE_CLIENT_ID en .env',
+      );
     }
 
     // Verificar el token con Google
@@ -186,7 +195,9 @@ export class AuthService {
     if (user) {
       // Usuario existe, actualizar si es necesario
       if (user.status === 'bloqueado') {
-        throw new UnauthorizedException('Tu cuenta está bloqueada. Contacta al administrador.');
+        throw new UnauthorizedException(
+          'Tu cuenta está bloqueada. Contacta al administrador.',
+        );
       }
 
       // Actualizar lastLoginAt
@@ -230,7 +241,12 @@ export class AuthService {
     };
   }
 
-  private generateToken(user: { id: string; email: string; businessId: string; role: string }): string {
+  private generateToken(user: {
+    id: string;
+    email: string;
+    businessId: string;
+    role: string;
+  }): string {
     const payload: JwtPayload = {
       sub: user.id,
       email: user.email,

@@ -19,7 +19,9 @@ function createPrismaError(code: string, meta?: Record<string, any>) {
   error.code = code;
   error.meta = meta;
   // Imitar PrismaClientKnownRequestError
-  Object.defineProperty(error, 'name', { value: 'PrismaClientKnownRequestError' });
+  Object.defineProperty(error, 'name', {
+    value: 'PrismaClientKnownRequestError',
+  });
   return error;
 }
 
@@ -52,7 +54,9 @@ describe('PrismaExceptionFilter', () => {
 
     it('debe incluir los campos afectados en el mensaje', () => {
       const { host, response } = createMockHost();
-      const exception = createPrismaError('P2002', { target: ['email', 'rut'] });
+      const exception = createPrismaError('P2002', {
+        target: ['email', 'rut'],
+      });
 
       filter.catch(exception, host);
 
@@ -102,7 +106,9 @@ describe('PrismaExceptionFilter', () => {
 
       filter.catch(exception, host);
 
-      expect(response.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
+      expect(response.status).toHaveBeenCalledWith(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
       expect(response.json).toHaveBeenCalledWith(
         expect.objectContaining({
           statusCode: HttpStatus.INTERNAL_SERVER_ERROR,

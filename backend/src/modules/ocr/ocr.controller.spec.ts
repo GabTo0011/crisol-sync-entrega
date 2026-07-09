@@ -13,7 +13,12 @@ const mockOcrResult = {
 
 const mockOcrService = {
   processReceipt: jest.fn().mockResolvedValue(mockOcrResult),
-  processAndSave: jest.fn().mockResolvedValue({ id: '1', comercio: 'Test', monto: 10000, estado: 'registrada' }),
+  processAndSave: jest.fn().mockResolvedValue({
+    id: '1',
+    comercio: 'Test',
+    monto: 10000,
+    estado: 'registrada',
+  }),
 };
 
 const mockPrisma = {
@@ -40,7 +45,11 @@ describe('OcrController', () => {
   });
 
   it('debe retornar resultado OCR en formato frontend', async () => {
-    const mockFile = { originalname: 'test.jpg', buffer: Buffer.from('fake'), mimetype: 'image/jpeg' } as Express.Multer.File;
+    const mockFile = {
+      originalname: 'test.jpg',
+      buffer: Buffer.from('fake'),
+      mimetype: 'image/jpeg',
+    } as Express.Multer.File;
     const result = await controller.processReceipt(mockFile);
 
     expect(result).toHaveProperty('comercio');
@@ -49,10 +58,17 @@ describe('OcrController', () => {
   });
 
   it('debe procesar y guardar en un solo request', async () => {
-    const mockFile = { originalname: 'test.jpg', buffer: Buffer.from('fake'), mimetype: 'image/jpeg' } as Express.Multer.File;
+    const mockFile = {
+      originalname: 'test.jpg',
+      buffer: Buffer.from('fake'),
+      mimetype: 'image/jpeg',
+    } as Express.Multer.File;
     const result = await controller.processAndSave(mockFile, 'biz-1');
 
-    expect(mockOcrService.processAndSave).toHaveBeenCalledWith(mockFile, 'biz-1');
+    expect(mockOcrService.processAndSave).toHaveBeenCalledWith(
+      mockFile,
+      'biz-1',
+    );
     expect(result).toHaveProperty('id');
   });
 });

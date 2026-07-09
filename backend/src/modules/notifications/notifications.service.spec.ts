@@ -4,9 +4,14 @@ import { NotificationsService } from './notifications.service';
 import { PrismaService } from '../../prisma/prisma.service';
 
 const mockNotification = {
-  id: '1', type: 'vencimiento', title: 'Factura por vencer',
-  message: 'Quedan 2 dias', createdAt: new Date('2026-04-17T09:10:00Z'),
-  read: false, priority: 'alta', businessId: 'biz-1',
+  id: '1',
+  type: 'vencimiento',
+  title: 'Factura por vencer',
+  message: 'Quedan 2 dias',
+  createdAt: new Date('2026-04-17T09:10:00Z'),
+  read: false,
+  priority: 'alta',
+  businessId: 'biz-1',
 };
 
 const mockPrisma = {
@@ -79,7 +84,10 @@ describe('NotificationsService', () => {
   describe('markAsRead', () => {
     it('debe marcar como leída y retornar formato frontend', async () => {
       mockPrisma.notification.findFirst.mockResolvedValue(mockNotification);
-      mockPrisma.notification.update.mockResolvedValue({ ...mockNotification, read: true });
+      mockPrisma.notification.update.mockResolvedValue({
+        ...mockNotification,
+        read: true,
+      });
 
       const result = await service.markAsRead('1', 'biz-1');
       expect(result.leida).toBe(true);
@@ -88,12 +96,17 @@ describe('NotificationsService', () => {
 
     it('debe lanzar NotFoundException si no existe', async () => {
       mockPrisma.notification.findFirst.mockResolvedValue(null);
-      await expect(service.markAsRead('fake', 'biz-1')).rejects.toThrow(NotFoundException);
+      await expect(service.markAsRead('fake', 'biz-1')).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('debe filtrar por id Y businessId', async () => {
       mockPrisma.notification.findFirst.mockResolvedValue(mockNotification);
-      mockPrisma.notification.update.mockResolvedValue({ ...mockNotification, read: true });
+      mockPrisma.notification.update.mockResolvedValue({
+        ...mockNotification,
+        read: true,
+      });
 
       await service.markAsRead('1', 'biz-1');
       expect(mockPrisma.notification.findFirst).toHaveBeenCalledWith(

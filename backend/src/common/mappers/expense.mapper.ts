@@ -14,9 +14,10 @@ const STATUS_MAP: Record<string, string> = {
 export function mapExpenseToFrontend(expense: any) {
   return {
     id: expense.id,
-    fecha: expense.issueDate instanceof Date
-      ? expense.issueDate.toISOString().slice(0, 10)
-      : String(expense.issueDate).slice(0, 10),
+    fecha:
+      expense.issueDate instanceof Date
+        ? expense.issueDate.toISOString().slice(0, 10)
+        : String(expense.issueDate).slice(0, 10),
     comercio: expense.supplierName ?? '',
     monto: expense.amountTotal,
     categoria: expense.category?.name ?? null,

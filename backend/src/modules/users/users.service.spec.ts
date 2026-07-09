@@ -4,9 +4,14 @@ import { UsersService } from './users.service';
 import { PrismaService } from '../../prisma/prisma.service';
 
 const mockUser = {
-  id: '1', name: 'Test User', email: 'test@x.cl', role: 'admin',
-  status: 'activo', lastLoginAt: new Date('2026-04-20'),
-  createdAt: new Date('2025-11-08'), businessId: 'biz-1',
+  id: '1',
+  name: 'Test User',
+  email: 'test@x.cl',
+  role: 'admin',
+  status: 'activo',
+  lastLoginAt: new Date('2026-04-20'),
+  createdAt: new Date('2025-11-08'),
+  businessId: 'biz-1',
 };
 
 const mockPrisma = {
@@ -69,12 +74,20 @@ describe('UsersService', () => {
     it('debe crear usuario con estado invitado', async () => {
       mockPrisma.user.findUnique.mockResolvedValue(null);
       mockPrisma.user.create.mockResolvedValue({
-        id: '2', name: 'Nuevo', email: 'nuevo@x.cl', role: 'operador',
-        status: 'invitado', lastLoginAt: null, createdAt: new Date(),
+        id: '2',
+        name: 'Nuevo',
+        email: 'nuevo@x.cl',
+        role: 'operador',
+        status: 'invitado',
+        lastLoginAt: null,
+        createdAt: new Date(),
       });
 
       const result = await service.invite({
-        businessId: 'biz-1', name: 'Nuevo', email: 'nuevo@x.cl', role: 'operador' as any,
+        businessId: 'biz-1',
+        name: 'Nuevo',
+        email: 'nuevo@x.cl',
+        role: 'operador' as any,
       });
       expect(result.status).toBe('invitado');
       expect(result.email).toBe('nuevo@x.cl');
@@ -83,12 +96,20 @@ describe('UsersService', () => {
     it('debe normalizar email a minúsculas', async () => {
       mockPrisma.user.findUnique.mockResolvedValue(null);
       mockPrisma.user.create.mockResolvedValue({
-        id: '3', name: 'Upper', email: 'upper@x.cl', role: 'visor',
-        status: 'invitado', lastLoginAt: null, createdAt: new Date(),
+        id: '3',
+        name: 'Upper',
+        email: 'upper@x.cl',
+        role: 'visor',
+        status: 'invitado',
+        lastLoginAt: null,
+        createdAt: new Date(),
       });
 
       await service.invite({
-        businessId: 'biz-1', name: 'Upper', email: '  UPPER@X.CL  ', role: 'visor' as any,
+        businessId: 'biz-1',
+        name: 'Upper',
+        email: '  UPPER@X.CL  ',
+        role: 'visor' as any,
       });
       const createCall = mockPrisma.user.create.mock.calls[0][0];
       expect(createCall.data.email).toBe('upper@x.cl');
@@ -97,23 +118,40 @@ describe('UsersService', () => {
     it('debe lanzar ConflictException si email ya existe', async () => {
       mockPrisma.user.findUnique.mockResolvedValue({ id: '1' });
       await expect(
-        service.invite({ businessId: 'biz-1', name: 'X', email: 'dup@x.cl', role: 'admin' as any }),
+        service.invite({
+          businessId: 'biz-1',
+          name: 'X',
+          email: 'dup@x.cl',
+          role: 'admin' as any,
+        }),
       ).rejects.toThrow(ConflictException);
     });
   });
 
   describe('toggleStatus', () => {
     it('debe alternar de activo a bloqueado', async () => {
-      mockPrisma.user.findFirst.mockResolvedValue({ ...mockUser, status: 'activo' });
-      mockPrisma.user.update.mockResolvedValue({ ...mockUser, status: 'bloqueado' });
+      mockPrisma.user.findFirst.mockResolvedValue({
+        ...mockUser,
+        status: 'activo',
+      });
+      mockPrisma.user.update.mockResolvedValue({
+        ...mockUser,
+        status: 'bloqueado',
+      });
 
       const result = await service.toggleStatus('1', 'biz-1');
       expect(result.status).toBe('bloqueado');
     });
 
     it('debe alternar de bloqueado a activo', async () => {
-      mockPrisma.user.findFirst.mockResolvedValue({ ...mockUser, status: 'bloqueado' });
-      mockPrisma.user.update.mockResolvedValue({ ...mockUser, status: 'activo' });
+      mockPrisma.user.findFirst.mockResolvedValue({
+        ...mockUser,
+        status: 'bloqueado',
+      });
+      mockPrisma.user.update.mockResolvedValue({
+        ...mockUser,
+        status: 'activo',
+      });
 
       const result = await service.toggleStatus('1', 'biz-1');
       expect(result.status).toBe('activo');
@@ -121,12 +159,20 @@ describe('UsersService', () => {
 
     it('debe lanzar NotFoundException si no existe', async () => {
       mockPrisma.user.findFirst.mockResolvedValue(null);
-      await expect(service.toggleStatus('fake', 'biz-1')).rejects.toThrow(NotFoundException);
+      await expect(service.toggleStatus('fake', 'biz-1')).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('debe filtrar por id Y businessId', async () => {
-      mockPrisma.user.findFirst.mockResolvedValue({ ...mockUser, status: 'activo' });
-      mockPrisma.user.update.mockResolvedValue({ ...mockUser, status: 'bloqueado' });
+      mockPrisma.user.findFirst.mockResolvedValue({
+        ...mockUser,
+        status: 'activo',
+      });
+      mockPrisma.user.update.mockResolvedValue({
+        ...mockUser,
+        status: 'bloqueado',
+      });
 
       await service.toggleStatus('1', 'biz-1');
       expect(mockPrisma.user.findFirst).toHaveBeenCalledWith(

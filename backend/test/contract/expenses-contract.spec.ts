@@ -28,15 +28,28 @@ const prismaExpense = {
   status: 'REGISTERED',
   createdAt: new Date(),
   updatedAt: new Date(),
-  category: { id: 'cat-1', businessId: 'biz-1', name: 'Insumos', createdAt: new Date(), updatedAt: new Date() },
+  category: {
+    id: 'cat-1',
+    businessId: 'biz-1',
+    name: 'Insumos',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
 };
 
 describe('Contract: Expenses Response Shape', () => {
   it('debe contener todos los campos requeridos por el frontend', () => {
     const result = mapExpenseToFrontend(prismaExpense);
     const requiredFields = [
-      'id', 'fecha', 'comercio', 'monto', 'categoria', 'estado',
-      'ocrConfidence', 'imagenUrl', 'observacion',
+      'id',
+      'fecha',
+      'comercio',
+      'monto',
+      'categoria',
+      'estado',
+      'ocrConfidence',
+      'imagenUrl',
+      'observacion',
     ];
     for (const field of requiredFields) {
       expect(result).toHaveProperty(field);
@@ -45,7 +58,14 @@ describe('Contract: Expenses Response Shape', () => {
 
   it('debe contener campos extra del detalle', () => {
     const result = mapExpenseToFrontend(prismaExpense);
-    const extraFields = ['businessId', 'montoNeto', 'iva', 'rutProveedor', 'fuente', 'esManual'];
+    const extraFields = [
+      'businessId',
+      'montoNeto',
+      'iva',
+      'rutProveedor',
+      'fuente',
+      'esManual',
+    ];
     for (const field of extraFields) {
       expect(result).toHaveProperty(field);
     }

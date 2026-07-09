@@ -1,9 +1,5 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import {
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SyncPayloadDto } from './dto/sync-payload.dto';
 import { SyncService } from './sync.service';
 
@@ -27,16 +23,33 @@ export class SyncController {
       type: 'object',
       properties: {
         id: { type: 'string', description: 'UUID del registro de sync' },
-        status: { type: 'string', enum: ['COMPLETED', 'FAILED'], example: 'COMPLETED' },
+        status: {
+          type: 'string',
+          enum: ['COMPLETED', 'FAILED'],
+          example: 'COMPLETED',
+        },
         itemCount: { type: 'number', example: 5 },
         processed: { type: 'number', example: 5 },
         failed: { type: 'number', example: 0 },
-        errors: { type: 'array', items: { type: 'object', properties: { localId: { type: 'string' }, error: { type: 'string' } } } },
+        errors: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              localId: { type: 'string' },
+              error: { type: 'string' },
+            },
+          },
+        },
         processedAt: { type: 'string', example: '2026-05-23T16:20:00.000Z' },
       },
     },
   })
-  @ApiResponse({ status: 400, description: 'Payload inválido (items vacíos, más de 100, o campos requeridos faltantes).' })
+  @ApiResponse({
+    status: 400,
+    description:
+      'Payload inválido (items vacíos, más de 100, o campos requeridos faltantes).',
+  })
   processOfflinePayload(@Body() dto: SyncPayloadDto) {
     return this.syncService.processOfflinePayload(dto);
   }

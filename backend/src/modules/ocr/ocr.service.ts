@@ -41,7 +41,12 @@ export class OcrService {
     }
 
     // Validar tipo de archivo
-    const allowedMimes = ['image/jpeg', 'image/png', 'image/tiff', 'application/pdf'];
+    const allowedMimes = [
+      'image/jpeg',
+      'image/png',
+      'image/tiff',
+      'application/pdf',
+    ];
     if (!allowedMimes.includes(file.mimetype)) {
       throw new BadRequestException(
         `Tipo de archivo no soportado: ${file.mimetype}. Formatos permitidos: JPG, PNG, TIFF, PDF`,
@@ -51,7 +56,9 @@ export class OcrService {
     // Validar tamaño (max 10MB)
     const maxSize = 10 * 1024 * 1024;
     if (file.size > maxSize) {
-      throw new BadRequestException('El archivo excede el tamaño máximo de 10MB');
+      throw new BadRequestException(
+        'El archivo excede el tamaño máximo de 10MB',
+      );
     }
 
     return this.analyzeWithAzure(file.buffer);
@@ -118,20 +125,23 @@ export class OcrService {
 
   private getStringValue(field?: DocumentField): string | null {
     if (!field) return null;
-    if ('value' in field && typeof field.value === 'string') return field.value.trim();
+    if ('value' in field && typeof field.value === 'string')
+      return field.value.trim();
     return field.content?.trim() || null;
   }
 
   private getDateValue(field?: DocumentField): string | null {
     if (!field) return null;
-    if ('value' in field && field.value instanceof Date) return field.value.toISOString().slice(0, 10);
+    if ('value' in field && field.value instanceof Date)
+      return field.value.toISOString().slice(0, 10);
     return field.content?.trim() || null;
   }
 
   private getAmountValue(field?: DocumentField): number | null {
     if (!field) return null;
     if (field.kind === 'currency') return Math.round(field.value?.amount ?? 0);
-    if ('value' in field && typeof field.value === 'number') return Math.round(field.value);
+    if ('value' in field && typeof field.value === 'number')
+      return Math.round(field.value);
     const parsed = Number(field.content?.replace(/[^\d.-]/g, ''));
     return Number.isFinite(parsed) ? Math.round(parsed) : null;
   }
@@ -149,7 +159,9 @@ export class OcrService {
 
     if (!confidences.length) return 0;
 
-    const average = confidences.reduce((total, value) => total + value, 0) / confidences.length;
+    const average =
+      confidences.reduce((total, value) => total + value, 0) /
+      confidences.length;
     return Math.max(0, Math.min(1, Number(average.toFixed(2))));
   }
 
@@ -159,8 +171,10 @@ export class OcrService {
     if (/farmacia|salud/.test(normalized)) return 'Servicios';
     if (/ferreter|construccion|herramient/.test(normalized)) return 'Insumos';
     if (/librer|papeler|oficina/.test(normalized)) return 'Oficina';
-    if (/servicentro|bencina|combustible|ruta/.test(normalized)) return 'Transporte';
-    if (/market|super|minimarket|almacen|restaur|cafe/.test(normalized)) return 'Alimentacion';
+    if (/servicentro|bencina|combustible|ruta/.test(normalized))
+      return 'Transporte';
+    if (/market|super|minimarket|almacen|restaur|cafe/.test(normalized))
+      return 'Alimentacion';
     return 'Otros';
   }
 

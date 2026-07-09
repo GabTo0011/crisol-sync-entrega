@@ -3,8 +3,12 @@ import { SettingsService } from './settings.service';
 import { PrismaService } from '../../prisma/prisma.service';
 
 const mockCert = {
-  id: '1', fileName: 'cert.pfx', mimeType: 'application/x-pkcs12',
-  size: 4096, status: 'activo', uploadedAt: new Date('2026-05-20'),
+  id: '1',
+  fileName: 'cert.pfx',
+  mimeType: 'application/x-pkcs12',
+  size: 4096,
+  status: 'activo',
+  uploadedAt: new Date('2026-05-20'),
   businessId: 'biz-1',
 };
 
@@ -68,7 +72,11 @@ describe('SettingsService', () => {
       mockPrisma.certificate.updateMany.mockResolvedValue({ count: 1 });
       mockPrisma.certificate.create.mockResolvedValue({ ...mockCert, id: '2' });
 
-      const mockFile = { originalname: 'new.pfx', mimetype: 'application/x-pkcs12', size: 2048 } as Express.Multer.File;
+      const mockFile = {
+        originalname: 'new.pfx',
+        mimetype: 'application/x-pkcs12',
+        size: 2048,
+      } as Express.Multer.File;
       await service.uploadCertificate('biz-1', mockFile);
 
       expect(mockPrisma.certificate.updateMany).toHaveBeenCalledWith({
@@ -79,9 +87,17 @@ describe('SettingsService', () => {
 
     it('debe crear certificado con status activo', async () => {
       mockPrisma.certificate.updateMany.mockResolvedValue({ count: 0 });
-      mockPrisma.certificate.create.mockResolvedValue({ ...mockCert, id: '2', fileName: 'new.pfx' });
+      mockPrisma.certificate.create.mockResolvedValue({
+        ...mockCert,
+        id: '2',
+        fileName: 'new.pfx',
+      });
 
-      const mockFile = { originalname: 'new.pfx', mimetype: 'application/x-pkcs12', size: 2048 } as Express.Multer.File;
+      const mockFile = {
+        originalname: 'new.pfx',
+        mimetype: 'application/x-pkcs12',
+        size: 2048,
+      } as Express.Multer.File;
       const result = await service.uploadCertificate('biz-1', mockFile);
 
       expect(result.status).toBe('activo');
@@ -90,9 +106,16 @@ describe('SettingsService', () => {
 
     it('debe usar mimetype del archivo subido', async () => {
       mockPrisma.certificate.updateMany.mockResolvedValue({ count: 0 });
-      mockPrisma.certificate.create.mockResolvedValue({ ...mockCert, mimeType: 'application/x-pem-file' });
+      mockPrisma.certificate.create.mockResolvedValue({
+        ...mockCert,
+        mimeType: 'application/x-pem-file',
+      });
 
-      const mockFile = { originalname: 'cert.pem', mimetype: 'application/x-pem-file', size: 1024 } as Express.Multer.File;
+      const mockFile = {
+        originalname: 'cert.pem',
+        mimetype: 'application/x-pem-file',
+        size: 1024,
+      } as Express.Multer.File;
       await service.uploadCertificate('biz-1', mockFile);
 
       const createCall = mockPrisma.certificate.create.mock.calls[0][0];

@@ -93,12 +93,13 @@ export class AnalyticsService {
       .map((g) => g.categoryId)
       .filter((id): id is string => id !== null);
 
-    const categories = categoryIds.length > 0
-      ? await this.prisma.category.findMany({
-          where: { id: { in: categoryIds } },
-          select: { id: true, name: true },
-        })
-      : [];
+    const categories =
+      categoryIds.length > 0
+        ? await this.prisma.category.findMany({
+            where: { id: { in: categoryIds } },
+            select: { id: true, name: true },
+          })
+        : [];
 
     const categoryMap = new Map(categories.map((c) => [c.id, c.name]));
 
@@ -116,7 +117,9 @@ export class AnalyticsService {
         category: e.category?.name ?? null,
       })),
       expensesByCategory: expensesByCategory.map((g) => ({
-        category: g.categoryId ? (categoryMap.get(g.categoryId) ?? 'Sin categoría') : 'Sin categoría',
+        category: g.categoryId
+          ? (categoryMap.get(g.categoryId) ?? 'Sin categoría')
+          : 'Sin categoría',
         total: g._sum.amountTotal ?? 0,
         count: g._count.id,
       })),

@@ -1,4 +1,8 @@
-import { BadRequestException, ConflictException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -51,11 +55,20 @@ describe('AuthService', () => {
     it('debe retornar token si credenciales son válidas', async () => {
       const hash = await bcrypt.hash('miClave123', 10);
       mockPrisma.user.findUnique.mockResolvedValue({
-        id: '1', email: 'test@x.cl', passwordHash: hash, businessId: 'biz-1', role: 'OWNER', name: 'Test', status: 'activo',
+        id: '1',
+        email: 'test@x.cl',
+        passwordHash: hash,
+        businessId: 'biz-1',
+        role: 'OWNER',
+        name: 'Test',
+        status: 'activo',
       });
       mockPrisma.user.update.mockResolvedValue({});
 
-      const result = await service.login({ email: 'test@x.cl', password: 'miClave123' });
+      const result = await service.login({
+        email: 'test@x.cl',
+        password: 'miClave123',
+      });
 
       expect(result.access_token).toBe('mock-jwt-token');
       expect(result.user.email).toBe('test@x.cl');
@@ -66,7 +79,13 @@ describe('AuthService', () => {
     it('debe actualizar lastLoginAt al loguearse', async () => {
       const hash = await bcrypt.hash('clave', 10);
       mockPrisma.user.findUnique.mockResolvedValue({
-        id: '1', email: 'test@x.cl', passwordHash: hash, businessId: 'biz-1', role: 'OWNER', name: 'T', status: 'activo',
+        id: '1',
+        email: 'test@x.cl',
+        passwordHash: hash,
+        businessId: 'biz-1',
+        role: 'OWNER',
+        name: 'T',
+        status: 'activo',
       });
       mockPrisma.user.update.mockResolvedValue({});
 
@@ -79,36 +98,63 @@ describe('AuthService', () => {
 
     it('debe normalizar email a minúsculas', async () => {
       mockPrisma.user.findUnique.mockResolvedValue(null);
-      await expect(service.login({ email: '  TEST@X.CL  ', password: '123' })).rejects.toThrow(UnauthorizedException);
-      expect(mockPrisma.user.findUnique).toHaveBeenCalledWith({ where: { email: 'test@x.cl' } });
+      await expect(
+        service.login({ email: '  TEST@X.CL  ', password: '123' }),
+      ).rejects.toThrow(UnauthorizedException);
+      expect(mockPrisma.user.findUnique).toHaveBeenCalledWith({
+        where: { email: 'test@x.cl' },
+      });
     });
 
     it('debe lanzar UnauthorizedException si email no existe', async () => {
       mockPrisma.user.findUnique.mockResolvedValue(null);
-      await expect(service.login({ email: 'no@x.cl', password: '123456' })).rejects.toThrow(UnauthorizedException);
+      await expect(
+        service.login({ email: 'no@x.cl', password: '123456' }),
+      ).rejects.toThrow(UnauthorizedException);
     });
 
     it('debe lanzar UnauthorizedException si usuario no tiene passwordHash', async () => {
       mockPrisma.user.findUnique.mockResolvedValue({
-        id: '1', email: 'google@x.cl', passwordHash: null, businessId: 'biz-1', role: 'OWNER', status: 'activo',
+        id: '1',
+        email: 'google@x.cl',
+        passwordHash: null,
+        businessId: 'biz-1',
+        role: 'OWNER',
+        status: 'activo',
       });
-      await expect(service.login({ email: 'google@x.cl', password: 'algo' })).rejects.toThrow(UnauthorizedException);
+      await expect(
+        service.login({ email: 'google@x.cl', password: 'algo' }),
+      ).rejects.toThrow(UnauthorizedException);
     });
 
     it('debe lanzar UnauthorizedException si contraseña es incorrecta', async () => {
       const hash = await bcrypt.hash('correcta', 10);
       mockPrisma.user.findUnique.mockResolvedValue({
-        id: '1', email: 'test@x.cl', passwordHash: hash, businessId: 'biz-1', role: 'OWNER', status: 'activo',
+        id: '1',
+        email: 'test@x.cl',
+        passwordHash: hash,
+        businessId: 'biz-1',
+        role: 'OWNER',
+        status: 'activo',
       });
-      await expect(service.login({ email: 'test@x.cl', password: 'incorrecta' })).rejects.toThrow(UnauthorizedException);
+      await expect(
+        service.login({ email: 'test@x.cl', password: 'incorrecta' }),
+      ).rejects.toThrow(UnauthorizedException);
     });
 
     it('debe lanzar UnauthorizedException si usuario está bloqueado', async () => {
       const hash = await bcrypt.hash('miClave123', 10);
       mockPrisma.user.findUnique.mockResolvedValue({
-        id: '1', email: 'test@x.cl', passwordHash: hash, businessId: 'biz-1', role: 'OWNER', status: 'bloqueado',
+        id: '1',
+        email: 'test@x.cl',
+        passwordHash: hash,
+        businessId: 'biz-1',
+        role: 'OWNER',
+        status: 'bloqueado',
       });
-      await expect(service.login({ email: 'test@x.cl', password: 'miClave123' })).rejects.toThrow(UnauthorizedException);
+      await expect(
+        service.login({ email: 'test@x.cl', password: 'miClave123' }),
+      ).rejects.toThrow(UnauthorizedException);
     });
   });
 
@@ -117,11 +163,19 @@ describe('AuthService', () => {
       mockPrisma.user.findUnique.mockResolvedValue(null);
       mockPrisma.business.create.mockResolvedValue({ id: 'new-biz' });
       mockPrisma.user.create.mockResolvedValue({
-        id: '2', name: 'Nuevo', email: 'nuevo@x.cl', role: 'OWNER', businessId: 'new-biz',
+        id: '2',
+        name: 'Nuevo',
+        email: 'nuevo@x.cl',
+        role: 'OWNER',
+        businessId: 'new-biz',
       });
 
       const result = await service.register({
-        name: 'Nuevo', email: 'nuevo@x.cl', password: 'miClave123', businessName: 'Mi Empresa', businessRut: '76.000.000-0',
+        name: 'Nuevo',
+        email: 'nuevo@x.cl',
+        password: 'miClave123',
+        businessName: 'Mi Empresa',
+        businessRut: '76.000.000-0',
       });
 
       expect(result.access_token).toBe('mock-jwt-token');
@@ -132,11 +186,18 @@ describe('AuthService', () => {
       mockPrisma.user.findUnique.mockResolvedValue(null);
       mockPrisma.business.findUnique.mockResolvedValue({ id: 'existing-biz' });
       mockPrisma.user.create.mockResolvedValue({
-        id: '3', name: 'Emp', email: 'emp@x.cl', role: 'OWNER', businessId: 'existing-biz',
+        id: '3',
+        name: 'Emp',
+        email: 'emp@x.cl',
+        role: 'OWNER',
+        businessId: 'existing-biz',
       });
 
       const result = await service.register({
-        name: 'Emp', email: 'emp@x.cl', password: '123456', businessId: 'existing-biz',
+        name: 'Emp',
+        email: 'emp@x.cl',
+        password: '123456',
+        businessId: 'existing-biz',
       });
 
       expect(result.user.businessId).toBe('existing-biz');
@@ -148,23 +209,38 @@ describe('AuthService', () => {
       mockPrisma.business.findUnique.mockResolvedValue(null);
 
       await expect(
-        service.register({ name: 'X', email: 'x@x.cl', password: '123', businessId: 'fake-biz' }),
+        service.register({
+          name: 'X',
+          email: 'x@x.cl',
+          password: '123',
+          businessId: 'fake-biz',
+        }),
       ).rejects.toThrow(BadRequestException);
     });
 
     it('debe lanzar ConflictException si email ya existe', async () => {
       mockPrisma.user.findUnique.mockResolvedValue({ id: '1' });
-      await expect(service.register({ name: 'X', email: 'dup@x.cl', password: '123456' })).rejects.toThrow(ConflictException);
+      await expect(
+        service.register({ name: 'X', email: 'dup@x.cl', password: '123456' }),
+      ).rejects.toThrow(ConflictException);
     });
 
     it('debe hashear la contraseña antes de guardar', async () => {
       mockPrisma.user.findUnique.mockResolvedValue(null);
       mockPrisma.business.create.mockResolvedValue({ id: 'biz' });
       mockPrisma.user.create.mockResolvedValue({
-        id: '4', name: 'H', email: 'h@x.cl', role: 'OWNER', businessId: 'biz',
+        id: '4',
+        name: 'H',
+        email: 'h@x.cl',
+        role: 'OWNER',
+        businessId: 'biz',
       });
 
-      await service.register({ name: 'H', email: 'h@x.cl', password: 'plaintext123' });
+      await service.register({
+        name: 'H',
+        email: 'h@x.cl',
+        password: 'plaintext123',
+      });
 
       const createCall = mockPrisma.user.create.mock.calls[0][0];
       expect(createCall.data.passwordHash).not.toBe('plaintext123');
@@ -175,9 +251,14 @@ describe('AuthService', () => {
   describe('getMe', () => {
     it('debe retornar perfil del usuario con datos del negocio', async () => {
       mockPrisma.user.findUnique.mockResolvedValue({
-        id: 'u1', name: 'Camila', email: 'camila@x.cl', role: 'OWNER',
-        status: 'activo', businessId: 'biz-1',
-        lastLoginAt: new Date('2026-05-20'), createdAt: new Date('2026-01-01'),
+        id: 'u1',
+        name: 'Camila',
+        email: 'camila@x.cl',
+        role: 'OWNER',
+        status: 'activo',
+        businessId: 'biz-1',
+        lastLoginAt: new Date('2026-05-20'),
+        createdAt: new Date('2026-01-01'),
         business: { name: 'Crysol SpA', rut: '76.123.456-K' },
       });
 
@@ -192,14 +273,22 @@ describe('AuthService', () => {
 
     it('debe lanzar UnauthorizedException si usuario no existe', async () => {
       mockPrisma.user.findUnique.mockResolvedValue(null);
-      await expect(service.getMe('fake')).rejects.toThrow(UnauthorizedException);
+      await expect(service.getMe('fake')).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
 
     it('debe retornar lastLoginAt null si nunca logueó', async () => {
       mockPrisma.user.findUnique.mockResolvedValue({
-        id: 'u2', name: 'X', email: 'x@x.cl', role: 'OWNER',
-        status: 'activo', businessId: 'biz-1', lastLoginAt: null,
-        createdAt: new Date(), business: { name: 'B', rut: '1-9' },
+        id: 'u2',
+        name: 'X',
+        email: 'x@x.cl',
+        role: 'OWNER',
+        status: 'activo',
+        businessId: 'biz-1',
+        lastLoginAt: null,
+        createdAt: new Date(),
+        business: { name: 'B', rut: '1-9' },
       });
 
       const result = await service.getMe('u2');
@@ -210,7 +299,9 @@ describe('AuthService', () => {
   describe('googleAuth', () => {
     it('debe lanzar BadRequestException si GOOGLE_CLIENT_ID no está configurado', async () => {
       mockConfigService.get.mockReturnValue(undefined);
-      await expect(service.googleAuth({ credential: 'fake-token' })).rejects.toThrow(BadRequestException);
+      await expect(
+        service.googleAuth({ credential: 'fake-token' }),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 });

@@ -16,7 +16,13 @@ const mockExpense = {
   ocrConfidence: 0.92,
   documentUrl: null,
   description: 'Compra materiales',
-  category: { id: 'cat-1', businessId: 'biz-1', name: 'Insumos', createdAt: new Date(), updatedAt: new Date() },
+  category: {
+    id: 'cat-1',
+    businessId: 'biz-1',
+    name: 'Insumos',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
   categoryId: 'cat-1',
   source: 'MANUAL',
   isManual: true,
@@ -71,7 +77,7 @@ describe('ExpensesService', () => {
         isManual: true,
       };
 
-      const result = await service.create(dto as any);
+      const result = await service.create(dto);
 
       expect(mockPrisma.expense.create).toHaveBeenCalledTimes(1);
       expect(result).toHaveProperty('fecha', '2026-05-20');
@@ -81,8 +87,13 @@ describe('ExpensesService', () => {
     });
 
     it('debe asignar source MANUAL si isManual es true', async () => {
-      const dto = { businessId: 'biz-1', amountTotal: 1000, issueDate: '2026-01-01', isManual: true };
-      await service.create(dto as any);
+      const dto = {
+        businessId: 'biz-1',
+        amountTotal: 1000,
+        issueDate: '2026-01-01',
+        isManual: true,
+      };
+      await service.create(dto);
 
       const createCall = mockPrisma.expense.create.mock.calls[0][0];
       expect(createCall.data.source).toBe('MANUAL');
@@ -90,8 +101,13 @@ describe('ExpensesService', () => {
     });
 
     it('debe asignar source OCR si isManual es false', async () => {
-      const dto = { businessId: 'biz-1', amountTotal: 1000, issueDate: '2026-01-01', isManual: false };
-      await service.create(dto as any);
+      const dto = {
+        businessId: 'biz-1',
+        amountTotal: 1000,
+        issueDate: '2026-01-01',
+        isManual: false,
+      };
+      await service.create(dto);
 
       const createCall = mockPrisma.expense.create.mock.calls[0][0];
       expect(createCall.data.source).toBe('OCR');
@@ -104,7 +120,10 @@ describe('ExpensesService', () => {
 
       expect(Array.isArray(result)).toBe(true);
       expect((result as any[])[0]).toHaveProperty('fecha', '2026-05-20');
-      expect((result as any[])[0]).toHaveProperty('comercio', 'Ferretería San José');
+      expect((result as any[])[0]).toHaveProperty(
+        'comercio',
+        'Ferretería San José',
+      );
       expect((result as any[])[0]).toHaveProperty('estado', 'registrada');
     });
 
@@ -119,7 +138,12 @@ describe('ExpensesService', () => {
       const result = await service.findAll('biz-1', 1, 20);
 
       expect((result as any).data[0]).toHaveProperty('fecha', '2026-05-20');
-      expect((result as any).meta).toEqual({ total: 1, page: 1, limit: 20, totalPages: 1 });
+      expect((result as any).meta).toEqual({
+        total: 1,
+        page: 1,
+        limit: 20,
+        totalPages: 1,
+      });
     });
 
     it('debe calcular totalPages correctamente', async () => {
@@ -139,13 +163,17 @@ describe('ExpensesService', () => {
 
     it('debe lanzar NotFoundException si no existe', async () => {
       mockPrisma.expense.findFirst.mockResolvedValue(null);
-      await expect(service.findOne('fake-id', 'biz-1')).rejects.toThrow(NotFoundException);
+      await expect(service.findOne('fake-id', 'biz-1')).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('debe filtrar por id Y businessId', async () => {
       await service.findOne('exp-1', 'biz-1');
       expect(mockPrisma.expense.findFirst).toHaveBeenCalledWith(
-        expect.objectContaining({ where: { id: 'exp-1', businessId: 'biz-1' } }),
+        expect.objectContaining({
+          where: { id: 'exp-1', businessId: 'biz-1' },
+        }),
       );
     });
   });
@@ -155,38 +183,54 @@ describe('ExpensesService', () => {
       const updatedExpense = { ...mockExpense, supplierName: 'Nuevo Nombre' };
       mockPrisma.expense.update.mockResolvedValue(updatedExpense);
 
-      const result = await service.update('1', 'biz-1', { supplierName: 'Nuevo Nombre' } as any);
+      const result = await service.update('1', 'biz-1', {
+        supplierName: 'Nuevo Nombre',
+      });
       expect(mockPrisma.expense.update).toHaveBeenCalledTimes(1);
       expect(result).toHaveProperty('comercio', 'Nuevo Nombre');
     });
 
     it('debe lanzar NotFoundException si el gasto no existe', async () => {
       mockPrisma.expense.findFirst.mockResolvedValue(null);
-      await expect(service.update('fake', 'biz-1', {} as any)).rejects.toThrow(NotFoundException);
+      await expect(service.update('fake', 'biz-1', {} as any)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
   describe('cancel', () => {
     it('debe cambiar estado a anulada', async () => {
-      mockPrisma.expense.update.mockResolvedValue({ ...mockExpense, status: 'CANCELLED' });
+      mockPrisma.expense.update.mockResolvedValue({
+        ...mockExpense,
+        status: 'CANCELLED',
+      });
       const result = await service.cancel('1', 'biz-1', 'Error');
       expect(result.estado).toBe('anulada');
     });
 
     it('debe lanzar BadRequestException si ya está anulado', async () => {
-      mockPrisma.expense.findFirst.mockResolvedValue({ ...mockExpense, status: 'CANCELLED' });
-      await expect(service.cancel('1', 'biz-1')).rejects.toThrow(BadRequestException);
+      mockPrisma.expense.findFirst.mockResolvedValue({
+        ...mockExpense,
+        status: 'CANCELLED',
+      });
+      await expect(service.cancel('1', 'biz-1')).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
     it('debe lanzar NotFoundException si no existe', async () => {
       mockPrisma.expense.findFirst.mockResolvedValue(null);
-      await expect(service.cancel('fake', 'biz-1')).rejects.toThrow(NotFoundException);
+      await expect(service.cancel('fake', 'biz-1')).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('debe concatenar razón de anulación en la descripción', async () => {
       await service.cancel('1', 'biz-1', 'Monto incorrecto');
       const updateCall = mockPrisma.expense.update.mock.calls[0][0];
-      expect(updateCall.data.description).toContain('[Anulado: Monto incorrecto]');
+      expect(updateCall.data.description).toContain(
+        '[Anulado: Monto incorrecto]',
+      );
     });
   });
 
@@ -194,12 +238,16 @@ describe('ExpensesService', () => {
     it('debe eliminar y retornar success', async () => {
       const result = await service.remove('1', 'biz-1');
       expect(result).toEqual({ success: true });
-      expect(mockPrisma.expense.delete).toHaveBeenCalledWith({ where: { id: '1' } });
+      expect(mockPrisma.expense.delete).toHaveBeenCalledWith({
+        where: { id: '1' },
+      });
     });
 
     it('debe lanzar NotFoundException si no existe', async () => {
       mockPrisma.expense.findFirst.mockResolvedValue(null);
-      await expect(service.remove('fake', 'biz-1')).rejects.toThrow(NotFoundException);
+      await expect(service.remove('fake', 'biz-1')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 });

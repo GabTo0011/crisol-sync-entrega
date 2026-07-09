@@ -10,7 +10,9 @@ const mockPrisma = {
   },
 };
 
-function createMockContext(overrides: { user?: any; query?: any; body?: any } = {}): ExecutionContext {
+function createMockContext(
+  overrides: { user?: any; query?: any; body?: any } = {},
+): ExecutionContext {
   const request = {
     user: overrides.user ?? undefined,
     query: overrides.query ?? {},

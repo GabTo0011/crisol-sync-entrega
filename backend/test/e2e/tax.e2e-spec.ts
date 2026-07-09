@@ -21,14 +21,26 @@ describe('E2E: Tax Invoices Flow', () => {
 
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api');
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+      }),
+    );
     app.useGlobalFilters(new PrismaExceptionFilter());
     await app.init();
 
     // Register a test user
     const registerRes = await request(app.getHttpServer())
       .post('/api/auth/register')
-      .send({ name: 'E2E Tax', email: `e2e-tax-${Date.now()}@test.cl`, password: 'Test123!', businessName: 'E2E Tax Biz', businessRut: `e2e-tax-${Date.now()}` });
+      .send({
+        name: 'E2E Tax',
+        email: `e2e-tax-${Date.now()}@test.cl`,
+        password: 'Test123!',
+        businessName: 'E2E Tax Biz',
+        businessRut: `e2e-tax-${Date.now()}`,
+      });
 
     if (registerRes.status === 201) {
       businessId = registerRes.body.user.businessId;

@@ -14,7 +14,10 @@ import {
 import { Type } from 'class-transformer';
 
 export class SyncExpenseItem {
-  @ApiProperty({ description: 'ID local temporal del gasto (generado offline)', example: 'local-1716480000000' })
+  @ApiProperty({
+    description: 'ID local temporal del gasto (generado offline)',
+    example: 'local-1716480000000',
+  })
   @IsString()
   localId: string;
 
@@ -23,11 +26,17 @@ export class SyncExpenseItem {
   @Min(1)
   amountTotal: number;
 
-  @ApiProperty({ description: 'Fecha de emisión (ISO 8601)', example: '2026-05-20' })
+  @ApiProperty({
+    description: 'Fecha de emisión (ISO 8601)',
+    example: '2026-05-20',
+  })
   @IsDateString()
   issueDate: string;
 
-  @ApiProperty({ description: 'Nombre del proveedor', example: 'Ferretería San José' })
+  @ApiProperty({
+    description: 'Nombre del proveedor',
+    example: 'Ferretería San José',
+  })
   @IsOptional()
   @IsString()
   supplierName?: string;
@@ -37,7 +46,10 @@ export class SyncExpenseItem {
   @IsString()
   supplierRut?: string;
 
-  @ApiProperty({ description: 'Descripción del gasto', example: 'Compra de materiales' })
+  @ApiProperty({
+    description: 'Descripción del gasto',
+    example: 'Compra de materiales',
+  })
   @IsOptional()
   @IsString()
   description?: string;
@@ -61,12 +73,16 @@ export class SyncExpenseItem {
 }
 
 export class SyncPayloadDto {
-  @ApiProperty({ description: 'UUID del negocio', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  @ApiProperty({
+    description: 'UUID del negocio',
+    example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+  })
   @IsUUID()
   businessId: string;
 
   @ApiProperty({
-    description: 'Array de gastos registrados offline para sincronizar (máximo 100 por request)',
+    description:
+      'Array de gastos registrados offline para sincronizar (máximo 100 por request)',
     type: [SyncExpenseItem],
   })
   @IsArray()
