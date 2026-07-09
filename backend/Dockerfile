@@ -37,7 +37,8 @@ COPY --from=deps /app/prisma.config.ts ./prisma.config.ts
 COPY tsconfig.json tsconfig.build.json nest-cli.json ./
 COPY src ./src
 
-# Generate Prisma Client
+# Generate Prisma Client (dummy DATABASE_URL for generation only)
+ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
 RUN npx prisma generate
 
 # Build NestJS
