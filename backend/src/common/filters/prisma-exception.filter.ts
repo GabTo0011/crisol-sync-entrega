@@ -23,7 +23,8 @@ export class PrismaExceptionFilter implements ExceptionFilter {
     switch (exception.code) {
       case 'P2002': {
         // Unique constraint violation
-        const fields = (exception.meta?.target as string[])?.join(', ') ?? 'campo';
+        const fields =
+          (exception.meta?.target as string[])?.join(', ') ?? 'campo';
         status = HttpStatus.CONFLICT;
         message = `Ya existe un registro con ese valor en: ${fields}`;
         break;

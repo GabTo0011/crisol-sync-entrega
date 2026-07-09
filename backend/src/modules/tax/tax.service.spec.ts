@@ -4,11 +4,21 @@ import { TaxService } from './tax.service';
 import { PrismaService } from '../../prisma/prisma.service';
 
 const mockInvoice = {
-  id: '1', businessId: 'biz-1', folio: 'F-001', supplierRut: '76.111.222-3',
-  supplierName: 'Test Ltda', amountNet: 100000, amountVat: 19000, amountTotal: 119000,
-  issuedAt: new Date('2026-04-01'), receivedAt: new Date('2026-04-03'),
-  status: 'PENDING_ACCEPTANCE', actionReason: null, actionAt: null,
-  createdAt: new Date(), updatedAt: new Date(),
+  id: '1',
+  businessId: 'biz-1',
+  folio: 'F-001',
+  supplierRut: '76.111.222-3',
+  supplierName: 'Test Ltda',
+  amountNet: 100000,
+  amountVat: 19000,
+  amountTotal: 119000,
+  issuedAt: new Date('2026-04-01'),
+  receivedAt: new Date('2026-04-03'),
+  status: 'PENDING_ACCEPTANCE',
+  actionReason: null,
+  actionAt: null,
+  createdAt: new Date(),
+  updatedAt: new Date(),
 };
 
 const mockPrisma = {
@@ -26,10 +36,7 @@ describe('TaxService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        TaxService,
-        { provide: PrismaService, useValue: mockPrisma },
-      ],
+      providers: [TaxService, { provide: PrismaService, useValue: mockPrisma }],
     }).compile();
 
     service = module.get<TaxService>(TaxService);
@@ -78,14 +85,18 @@ describe('TaxService', () => {
 
     it('debe lanzar NotFoundException si no existe', async () => {
       mockPrisma.invoiceSii.findFirst.mockResolvedValue(null);
-      await expect(service.findOne('fake', 'biz-1')).rejects.toThrow(NotFoundException);
+      await expect(service.findOne('fake', 'biz-1')).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('debe filtrar por id Y businessId', async () => {
       mockPrisma.invoiceSii.findFirst.mockResolvedValue(mockInvoice);
       await service.findOne('inv-1', 'biz-1');
       expect(mockPrisma.invoiceSii.findFirst).toHaveBeenCalledWith(
-        expect.objectContaining({ where: { id: 'inv-1', businessId: 'biz-1' } }),
+        expect.objectContaining({
+          where: { id: 'inv-1', businessId: 'biz-1' },
+        }),
       );
     });
   });
@@ -93,7 +104,10 @@ describe('TaxService', () => {
   describe('accept', () => {
     it('debe cambiar estado a aceptada', async () => {
       mockPrisma.invoiceSii.findFirst.mockResolvedValue(mockInvoice);
-      mockPrisma.invoiceSii.update.mockResolvedValue({ ...mockInvoice, status: 'ACCEPTED' });
+      mockPrisma.invoiceSii.update.mockResolvedValue({
+        ...mockInvoice,
+        status: 'ACCEPTED',
+      });
 
       const result = await service.accept('1', 'biz-1', 'OK');
       expect(result.estado).toBe('aceptada');
@@ -101,7 +115,10 @@ describe('TaxService', () => {
 
     it('debe guardar actionReason y actionAt', async () => {
       mockPrisma.invoiceSii.findFirst.mockResolvedValue(mockInvoice);
-      mockPrisma.invoiceSii.update.mockResolvedValue({ ...mockInvoice, status: 'ACCEPTED' });
+      mockPrisma.invoiceSii.update.mockResolvedValue({
+        ...mockInvoice,
+        status: 'ACCEPTED',
+      });
 
       await service.accept('1', 'biz-1', 'Verificada');
       const updateCall = mockPrisma.invoiceSii.update.mock.calls[0][0];
@@ -110,43 +127,70 @@ describe('TaxService', () => {
     });
 
     it('debe lanzar BadRequestException si ya fue aceptada', async () => {
-      mockPrisma.invoiceSii.findFirst.mockResolvedValue({ ...mockInvoice, status: 'ACCEPTED' });
-      await expect(service.accept('1', 'biz-1')).rejects.toThrow(BadRequestException);
+      mockPrisma.invoiceSii.findFirst.mockResolvedValue({
+        ...mockInvoice,
+        status: 'ACCEPTED',
+      });
+      await expect(service.accept('1', 'biz-1')).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
     it('debe lanzar BadRequestException si ya fue rechazada', async () => {
-      mockPrisma.invoiceSii.findFirst.mockResolvedValue({ ...mockInvoice, status: 'REJECTED' });
-      await expect(service.accept('1', 'biz-1')).rejects.toThrow(BadRequestException);
+      mockPrisma.invoiceSii.findFirst.mockResolvedValue({
+        ...mockInvoice,
+        status: 'REJECTED',
+      });
+      await expect(service.accept('1', 'biz-1')).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
     it('debe lanzar NotFoundException si no existe', async () => {
       mockPrisma.invoiceSii.findFirst.mockResolvedValue(null);
-      await expect(service.accept('fake', 'biz-1')).rejects.toThrow(NotFoundException);
+      await expect(service.accept('fake', 'biz-1')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
   describe('reject', () => {
     it('debe cambiar estado a rechazada', async () => {
       mockPrisma.invoiceSii.findFirst.mockResolvedValue(mockInvoice);
-      mockPrisma.invoiceSii.update.mockResolvedValue({ ...mockInvoice, status: 'REJECTED' });
+      mockPrisma.invoiceSii.update.mockResolvedValue({
+        ...mockInvoice,
+        status: 'REJECTED',
+      });
 
       const result = await service.reject('1', 'biz-1', 'Datos incorrectos');
       expect(result.estado).toBe('rechazada');
     });
 
     it('debe lanzar BadRequestException si ya fue aceptada', async () => {
-      mockPrisma.invoiceSii.findFirst.mockResolvedValue({ ...mockInvoice, status: 'ACCEPTED' });
-      await expect(service.reject('1', 'biz-1')).rejects.toThrow(BadRequestException);
+      mockPrisma.invoiceSii.findFirst.mockResolvedValue({
+        ...mockInvoice,
+        status: 'ACCEPTED',
+      });
+      await expect(service.reject('1', 'biz-1')).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
     it('debe lanzar BadRequestException si ya fue rechazada', async () => {
-      mockPrisma.invoiceSii.findFirst.mockResolvedValue({ ...mockInvoice, status: 'REJECTED' });
-      await expect(service.reject('1', 'biz-1')).rejects.toThrow(BadRequestException);
+      mockPrisma.invoiceSii.findFirst.mockResolvedValue({
+        ...mockInvoice,
+        status: 'REJECTED',
+      });
+      await expect(service.reject('1', 'biz-1')).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
     it('debe lanzar NotFoundException si no existe', async () => {
       mockPrisma.invoiceSii.findFirst.mockResolvedValue(null);
-      await expect(service.reject('fake', 'biz-1')).rejects.toThrow(NotFoundException);
+      await expect(service.reject('fake', 'biz-1')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 

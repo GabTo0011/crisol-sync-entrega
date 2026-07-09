@@ -1,7 +1,14 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ExpenseSource, ExpenseStatus } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
-import { mapExpenseToFrontend, mapExpensesToFrontend } from '../../common/mappers';
+import {
+  mapExpenseToFrontend,
+  mapExpensesToFrontend,
+} from '../../common/mappers';
 import { CreateExpenseDto } from './dto/create-expense.dto';
 import { UpdateExpenseDto } from './dto/update-expense.dto';
 
@@ -24,7 +31,8 @@ export class ExpensesService {
         documentUrl: dto.documentUrl,
         ocrConfidence: dto.ocrConfidence,
         isManual: dto.isManual ?? true,
-        source: dto.isManual === false ? ExpenseSource.OCR : ExpenseSource.MANUAL,
+        source:
+          dto.isManual === false ? ExpenseSource.OCR : ExpenseSource.MANUAL,
       },
       include: { category: true },
     });

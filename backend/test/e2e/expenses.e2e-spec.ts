@@ -14,7 +14,7 @@ import { PrismaExceptionFilter } from '../../src/common/filters/prisma-exception
 
 describe('E2E: Expenses Flow', () => {
   let app: INestApplication<App>;
-  let accessToken: string;
+  let _accessToken: string;
   let businessId: string;
   let createdExpenseId: string;
 
@@ -25,17 +25,29 @@ describe('E2E: Expenses Flow', () => {
 
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api');
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+      }),
+    );
     app.useGlobalFilters(new PrismaExceptionFilter());
     await app.init();
 
     // Register a test user to get token and businessId
     const registerRes = await request(app.getHttpServer())
       .post('/api/auth/register')
-      .send({ name: 'E2E Test', email: `e2e-expenses-${Date.now()}@test.cl`, password: 'Test123!', businessName: 'E2E Biz', businessRut: `e2e-${Date.now()}` });
+      .send({
+        name: 'E2E Test',
+        email: `e2e-expenses-${Date.now()}@test.cl`,
+        password: 'Test123!',
+        businessName: 'E2E Biz',
+        businessRut: `e2e-${Date.now()}`,
+      });
 
     if (registerRes.status === 201) {
-      accessToken = registerRes.body.access_token;
+      _accessToken = registerRes.body.access_token;
       businessId = registerRes.body.user.businessId;
     }
   });
@@ -62,15 +74,13 @@ describe('E2E: Expenses Flow', () => {
   it('POST /api/expenses con datos válidos debe retornar 201', async function () {
     if (!businessId) return this.skip?.();
 
-    const res = await request(app.getHttpServer())
-      .post('/api/expenses')
-      .send({
-        businessId,
-        amountTotal: 25000,
-        issueDate: '2026-06-15',
-        supplierName: 'E2E Proveedor',
-        isManual: true,
-      });
+    const res = await request(app.getHttpServer()).post('/api/expenses').send({
+      businessId,
+      amountTotal: 25000,
+      issueDate: '2026-06-15',
+      supplierName: 'E2E Proveedor',
+      isManual: true,
+    });
 
     expect(res.status).toBe(201);
     expect(res.body).toHaveProperty('id');

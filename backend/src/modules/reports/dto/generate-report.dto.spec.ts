@@ -1,4 +1,7 @@
-import { validateDto, expectDtoValid, expectDtoInvalid } from '../../../../test/helpers/dto-validation.helper';
+import {
+  expectDtoValid,
+  expectDtoInvalid,
+} from '../../../../test/helpers/dto-validation.helper';
 import { GenerateReportDto } from './generate-report.dto';
 
 describe('GenerateReportDto', () => {
@@ -23,15 +26,27 @@ describe('GenerateReportDto', () => {
     });
 
     it('debe fallar si falta businessId', async () => {
-      await expectDtoInvalid(GenerateReportDto, { tipo: 'F29', formato: 'PDF' }, ['businessId']);
+      await expectDtoInvalid(
+        GenerateReportDto,
+        { tipo: 'F29', formato: 'PDF' },
+        ['businessId'],
+      );
     });
 
     it('debe fallar si falta tipo', async () => {
-      await expectDtoInvalid(GenerateReportDto, { businessId: validDto.businessId, formato: 'PDF' }, ['tipo']);
+      await expectDtoInvalid(
+        GenerateReportDto,
+        { businessId: validDto.businessId, formato: 'PDF' },
+        ['tipo'],
+      );
     });
 
     it('debe fallar si falta formato', async () => {
-      await expectDtoInvalid(GenerateReportDto, { businessId: validDto.businessId, tipo: 'F29' }, ['formato']);
+      await expectDtoInvalid(
+        GenerateReportDto,
+        { businessId: validDto.businessId, tipo: 'F29' },
+        ['formato'],
+      );
     });
   });
 
@@ -45,37 +60,63 @@ describe('GenerateReportDto', () => {
     });
 
     it('debe aceptar tipo DOCUMENTOS', async () => {
-      await expectDtoValid(GenerateReportDto, { ...validDto, tipo: 'DOCUMENTOS' });
+      await expectDtoValid(GenerateReportDto, {
+        ...validDto,
+        tipo: 'DOCUMENTOS',
+      });
     });
 
     it('debe fallar con tipo inválido', async () => {
-      await expectDtoInvalid(GenerateReportDto, { ...validDto, tipo: 'INVALIDO' }, ['tipo']);
+      await expectDtoInvalid(
+        GenerateReportDto,
+        { ...validDto, tipo: 'INVALIDO' },
+        ['tipo'],
+      );
     });
 
     it('debe aceptar formato PDF, CSV, EXCEL', async () => {
       await expectDtoValid(GenerateReportDto, { ...validDto, formato: 'PDF' });
       await expectDtoValid(GenerateReportDto, { ...validDto, formato: 'CSV' });
-      await expectDtoValid(GenerateReportDto, { ...validDto, formato: 'EXCEL' });
+      await expectDtoValid(GenerateReportDto, {
+        ...validDto,
+        formato: 'EXCEL',
+      });
     });
 
     it('debe fallar con formato inválido', async () => {
-      await expectDtoInvalid(GenerateReportDto, { ...validDto, formato: 'WORD' }, ['formato']);
+      await expectDtoInvalid(
+        GenerateReportDto,
+        { ...validDto, formato: 'WORD' },
+        ['formato'],
+      );
     });
   });
 
   describe('validación de fechas opcionales', () => {
     it('debe fallar si desde no es fecha válida', async () => {
-      await expectDtoInvalid(GenerateReportDto, { ...validDto, desde: 'no-es-fecha' }, ['desde']);
+      await expectDtoInvalid(
+        GenerateReportDto,
+        { ...validDto, desde: 'no-es-fecha' },
+        ['desde'],
+      );
     });
 
     it('debe fallar si hasta no es fecha válida', async () => {
-      await expectDtoInvalid(GenerateReportDto, { ...validDto, hasta: 'invalido' }, ['hasta']);
+      await expectDtoInvalid(
+        GenerateReportDto,
+        { ...validDto, hasta: 'invalido' },
+        ['hasta'],
+      );
     });
   });
 
   describe('validación UUID', () => {
     it('debe fallar si businessId no es UUID', async () => {
-      await expectDtoInvalid(GenerateReportDto, { ...validDto, businessId: 'not-uuid' }, ['businessId']);
+      await expectDtoInvalid(
+        GenerateReportDto,
+        { ...validDto, businessId: 'not-uuid' },
+        ['businessId'],
+      );
     });
   });
 });

@@ -44,7 +44,9 @@ export class BusinessGuard implements CanActivate {
     });
 
     if (!business) {
-      throw new NotFoundException(`Negocio con id "${businessId}" no encontrado`);
+      throw new NotFoundException(
+        `Negocio con id "${businessId}" no encontrado`,
+      );
     }
 
     // Inyectar businessId resuelto en el request para uso downstream

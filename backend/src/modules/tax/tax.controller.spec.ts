@@ -49,7 +49,11 @@ describe('TaxController', () => {
   });
 
   it('debe llamar a sync con businessId', async () => {
-    mockService.sync.mockResolvedValue({ syncedAt: '2026-05-23', totalInvoices: 3, newInvoices: 3 });
+    mockService.sync.mockResolvedValue({
+      syncedAt: '2026-05-23',
+      totalInvoices: 3,
+      newInvoices: 3,
+    });
     const result = await controller.sync({ businessId: 'biz-1' });
     expect(mockService.sync).toHaveBeenCalledWith('biz-1');
     expect(result.newInvoices).toBe(3);

@@ -1,6 +1,21 @@
-import { Controller, Get, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { OptionalAuthGuard } from '../../common/guards/optional-auth.guard';
 import { BusinessGuard } from '../../common/guards/business.guard';
 import { BusinessId } from '../../common/decorators/business-id.decorator';
@@ -15,7 +30,11 @@ export class SettingsController {
 
   @Get('certificate')
   @ApiOperation({ summary: 'Obtener certificado digital activo' })
-  @ApiQuery({ name: 'businessId', required: false, description: 'UUID del negocio (opcional si se usa JWT)' })
+  @ApiQuery({
+    name: 'businessId',
+    required: false,
+    description: 'UUID del negocio (opcional si se usa JWT)',
+  })
   @ApiResponse({ status: 200, description: 'Certificado retornado (o null).' })
   getCertificate(@BusinessId() businessId: string) {
     return this.settingsService.getCertificate(businessId);
@@ -24,7 +43,11 @@ export class SettingsController {
   @Post('certificate')
   @UseInterceptors(FileInterceptor('file'))
   @ApiOperation({ summary: 'Subir certificado digital' })
-  @ApiQuery({ name: 'businessId', required: false, description: 'UUID del negocio (opcional si se usa JWT)' })
+  @ApiQuery({
+    name: 'businessId',
+    required: false,
+    description: 'UUID del negocio (opcional si se usa JWT)',
+  })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {

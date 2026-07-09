@@ -53,17 +53,26 @@ describe('Invoice Mapper', () => {
     });
 
     it('debe mapear status ACCEPTED a "aceptada"', () => {
-      const result = mapInvoiceToFrontend({ ...prismaInvoice, status: 'ACCEPTED' });
+      const result = mapInvoiceToFrontend({
+        ...prismaInvoice,
+        status: 'ACCEPTED',
+      });
       expect(result.estado).toBe('aceptada');
     });
 
     it('debe mapear status REJECTED a "rechazada"', () => {
-      const result = mapInvoiceToFrontend({ ...prismaInvoice, status: 'REJECTED' });
+      const result = mapInvoiceToFrontend({
+        ...prismaInvoice,
+        status: 'REJECTED',
+      });
       expect(result.estado).toBe('rechazada');
     });
 
     it('debe mapear status AUTO_ACCEPTED a "auto-aceptada"', () => {
-      const result = mapInvoiceToFrontend({ ...prismaInvoice, status: 'AUTO_ACCEPTED' });
+      const result = mapInvoiceToFrontend({
+        ...prismaInvoice,
+        status: 'AUTO_ACCEPTED',
+      });
       expect(result.estado).toBe('auto-aceptada');
     });
 

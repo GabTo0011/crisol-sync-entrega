@@ -13,8 +13,16 @@ export const FIXTURE_OCR_RECEIPT = {
     {
       confidence: 0.89,
       fields: {
-        MerchantName: { value: 'Minimarket Central', confidence: 0.92, kind: 'string' },
-        TransactionDate: { value: new Date('2026-04-17'), confidence: 0.87, kind: 'date' },
+        MerchantName: {
+          value: 'Minimarket Central',
+          confidence: 0.92,
+          kind: 'string',
+        },
+        TransactionDate: {
+          value: new Date('2026-04-17'),
+          confidence: 0.87,
+          kind: 'date',
+        },
         Total: { value: { amount: 22990 }, confidence: 0.91, kind: 'currency' },
       },
     },
@@ -28,7 +36,11 @@ export const FIXTURE_OCR_NO_TOTAL = {
       confidence: 0.5,
       fields: {
         MerchantName: { value: 'Tienda X', confidence: 0.6, kind: 'string' },
-        TransactionDate: { value: new Date('2026-05-01'), confidence: 0.7, kind: 'date' },
+        TransactionDate: {
+          value: new Date('2026-05-01'),
+          confidence: 0.7,
+          kind: 'date',
+        },
       },
     },
   ],

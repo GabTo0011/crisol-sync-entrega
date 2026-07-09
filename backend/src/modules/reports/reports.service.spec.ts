@@ -56,7 +56,14 @@ describe('ReportsService', () => {
   describe('getHistory', () => {
     it('debe retornar historial mapeado al formato frontend', async () => {
       mockPrisma.report.findMany.mockResolvedValue([
-        { id: '1', type: 'F29', format: 'PDF', createdAt: new Date('2026-04-12'), generatedBy: 'Contabilidad', downloadUrl: '#' },
+        {
+          id: '1',
+          type: 'F29',
+          format: 'PDF',
+          createdAt: new Date('2026-04-12'),
+          generatedBy: 'Contabilidad',
+          downloadUrl: '#',
+        },
       ]);
 
       const result = await service.getHistory('biz-1');
@@ -115,7 +122,11 @@ describe('ReportsService', () => {
 
     it('debe persistir el reporte en la base de datos', async () => {
       mockPrisma.report.create.mockResolvedValue({
-        id: 'rep-2', type: 'DEUDA', format: 'CSV', createdAt: new Date(), downloadUrl: '#',
+        id: 'rep-2',
+        type: 'DEUDA',
+        format: 'CSV',
+        createdAt: new Date(),
+        downloadUrl: '#',
       });
 
       await service.generate({

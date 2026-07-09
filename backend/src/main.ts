@@ -28,34 +28,53 @@ async function bootstrap() {
     .setTitle('Crisol Sync API')
     .setDescription(
       'API REST para Crisol Sync — gestión de gastos, digitalización OCR, facturas SII, reportes y administración multiempresa.\n\n' +
-      '## Autenticación\n' +
-      'La mayoría de endpoints soportan autenticación JWT opcional (Bearer token). ' +
-      'Si se envía un token válido, el `businessId` se extrae automáticamente del JWT. ' +
-      'Si no se envía token, se debe proporcionar `businessId` como query parameter.\n\n' +
-      '## Flujo recomendado\n' +
-      '1. `POST /api/auth/register` — Crear cuenta (retorna JWT)\n' +
-      '2. Usar el `access_token` en el header `Authorization: Bearer <token>`\n' +
-      '3. Todos los endpoints resolverán el negocio automáticamente desde el JWT\n\n' +
-      '## Formato de respuestas\n' +
-      'Las respuestas de gastos y facturas usan nombres en español compatibles con el frontend React existente.',
+        '## Autenticación\n' +
+        'La mayoría de endpoints soportan autenticación JWT opcional (Bearer token). ' +
+        'Si se envía un token válido, el `businessId` se extrae automáticamente del JWT. ' +
+        'Si no se envía token, se debe proporcionar `businessId` como query parameter.\n\n' +
+        '## Flujo recomendado\n' +
+        '1. `POST /api/auth/register` — Crear cuenta (retorna JWT)\n' +
+        '2. Usar el `access_token` en el header `Authorization: Bearer <token>`\n' +
+        '3. Todos los endpoints resolverán el negocio automáticamente desde el JWT\n\n' +
+        '## Formato de respuestas\n' +
+        'Las respuestas de gastos y facturas usan nombres en español compatibles con el frontend React existente.',
     )
     .setVersion('1.1.0')
     .addBearerAuth({
       type: 'http',
       scheme: 'bearer',
       bearerFormat: 'JWT',
-      description: 'Ingresa el access_token obtenido en /api/auth/login o /api/auth/register',
+      description:
+        'Ingresa el access_token obtenido en /api/auth/login o /api/auth/register',
     })
     .addTag('Autenticación (Auth)', 'Login, registro y perfil de usuario')
-    .addTag('Gastos (Expenses)', 'CRUD de gastos/boletas con filtro por negocio')
-    .addTag('OCR (Digitalización)', 'Procesamiento de imágenes con Azure AI Document Intelligence')
+    .addTag(
+      'Gastos (Expenses)',
+      'CRUD de gastos/boletas con filtro por negocio',
+    )
+    .addTag(
+      'OCR (Digitalización)',
+      'Procesamiento de imágenes con Azure AI Document Intelligence',
+    )
     .addTag('Facturas SII (Tax)', 'Gestión de facturas electrónicas DTE')
-    .addTag('Reportes (Reports)', 'Generación y consulta de reportes financieros')
-    .addTag('Notificaciones (Notifications)', 'Alertas y notificaciones del sistema')
+    .addTag(
+      'Reportes (Reports)',
+      'Generación y consulta de reportes financieros',
+    )
+    .addTag(
+      'Notificaciones (Notifications)',
+      'Alertas y notificaciones del sistema',
+    )
     .addTag('Usuarios (Users)', 'Administración de usuarios del negocio')
-    .addTag('Configuración (Settings)', 'Certificados digitales y configuración')
+    .addTag(
+      'Configuración (Settings)',
+      'Certificados digitales y configuración',
+    )
     .addTag('Analytics (Dashboard)', 'Métricas agregadas para el dashboard')
-    .addTag('Sincronización Offline (Sync)', 'Procesamiento de datos registrados sin conexión')
+    .addTag(
+      'Sincronización Offline (Sync)',
+      'Procesamiento de datos registrados sin conexión',
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
@@ -72,4 +91,4 @@ async function bootstrap() {
   console.log(`Swagger docs available on http://localhost:${port}/api/docs`);
 }
 
-bootstrap();
+void bootstrap();

@@ -1,4 +1,8 @@
-import { validateDto, expectDtoValid, expectDtoInvalid } from '../../../../test/helpers/dto-validation.helper';
+import {
+  validateDto,
+  expectDtoValid,
+  expectDtoInvalid,
+} from '../../../../test/helpers/dto-validation.helper';
 import { SyncInvoicesDto } from './sync-invoices.dto';
 import { ActionInvoiceDto } from './action-invoice.dto';
 
@@ -14,7 +18,9 @@ describe('SyncInvoicesDto', () => {
   });
 
   it('debe fallar si businessId no es UUID', async () => {
-    await expectDtoInvalid(SyncInvoicesDto, { businessId: 'invalid' }, ['businessId']);
+    await expectDtoInvalid(SyncInvoicesDto, { businessId: 'invalid' }, [
+      'businessId',
+    ]);
   });
 
   it('debe fallar con campos no declarados', async () => {
@@ -36,6 +42,8 @@ describe('ActionInvoiceDto', () => {
   });
 
   it('debe fallar si reason no es string', async () => {
-    await expectDtoInvalid(ActionInvoiceDto, { reason: 12345 as any }, ['reason']);
+    await expectDtoInvalid(ActionInvoiceDto, { reason: 12345 as any }, [
+      'reason',
+    ]);
   });
 });

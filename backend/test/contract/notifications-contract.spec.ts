@@ -9,10 +9,14 @@ import { NotificationsService } from '../../src/modules/notifications/notificati
 import { PrismaService } from '../../src/prisma/prisma.service';
 
 const mockNotification = {
-  id: 'n-1', type: 'vencimiento', title: 'Factura F-58312 por vencer',
+  id: 'n-1',
+  type: 'vencimiento',
+  title: 'Factura F-58312 por vencer',
   message: 'Quedan 2 dias para aceptar o rechazar.',
-  createdAt: new Date('2026-04-17T09:10:00Z'), read: false,
-  priority: 'alta', businessId: 'biz-1',
+  createdAt: new Date('2026-04-17T09:10:00Z'),
+  read: false,
+  priority: 'alta',
+  businessId: 'biz-1',
 };
 
 const mockPrisma = {
@@ -36,7 +40,15 @@ describe('Contract: Notifications Response Shape', () => {
     mockPrisma.notification.findMany.mockResolvedValue([mockNotification]);
     const result = await service.findAll('biz-1');
 
-    const requiredFields = ['id', 'tipo', 'titulo', 'mensaje', 'fecha', 'leida', 'prioridad'];
+    const requiredFields = [
+      'id',
+      'tipo',
+      'titulo',
+      'mensaje',
+      'fecha',
+      'leida',
+      'prioridad',
+    ];
     for (const field of requiredFields) {
       expect(result[0]).toHaveProperty(field);
     }

@@ -19,25 +19,50 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
-  @ApiOperation({ summary: 'Iniciar sesión', description: 'Autentica un usuario con email y contraseña. Retorna un JWT.' })
-  @ApiResponse({ status: 200, description: 'Login exitoso. Retorna access_token y datos del usuario.' })
-  @ApiResponse({ status: 401, description: 'Credenciales inválidas o cuenta bloqueada.' })
+  @ApiOperation({
+    summary: 'Iniciar sesión',
+    description: 'Autentica un usuario con email y contraseña. Retorna un JWT.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Login exitoso. Retorna access_token y datos del usuario.',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Credenciales inválidas o cuenta bloqueada.',
+  })
   login(@Body() dto: LoginDto) {
     return this.authService.login(dto);
   }
 
   @Post('register')
-  @ApiOperation({ summary: 'Registrar nuevo usuario', description: 'Crea un usuario y opcionalmente un negocio. Retorna un JWT.' })
-  @ApiResponse({ status: 201, description: 'Registro exitoso. Retorna access_token y datos del usuario.' })
+  @ApiOperation({
+    summary: 'Registrar nuevo usuario',
+    description: 'Crea un usuario y opcionalmente un negocio. Retorna un JWT.',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Registro exitoso. Retorna access_token y datos del usuario.',
+  })
   @ApiResponse({ status: 409, description: 'El email ya está registrado.' })
   register(@Body() dto: RegisterDto) {
     return this.authService.register(dto);
   }
 
   @Post('google')
-  @ApiOperation({ summary: 'Autenticación con Google', description: 'Valida el token de Google Identity Services y crea/actualiza el usuario. Retorna un JWT.' })
-  @ApiResponse({ status: 201, description: 'Login exitoso. Retorna access_token y datos del usuario.' })
-  @ApiResponse({ status: 400, description: 'Token inválido o Google OAuth no configurado.' })
+  @ApiOperation({
+    summary: 'Autenticación con Google',
+    description:
+      'Valida el token de Google Identity Services y crea/actualiza el usuario. Retorna un JWT.',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Login exitoso. Retorna access_token y datos del usuario.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Token inválido o Google OAuth no configurado.',
+  })
   @ApiResponse({ status: 401, description: 'Cuenta bloqueada.' })
   googleAuth(@Body() dto: GoogleAuthDto) {
     return this.authService.googleAuth(dto);
@@ -46,7 +71,10 @@ export class AuthController {
   @Get('me')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Obtener perfil del usuario autenticado', description: 'Retorna los datos del usuario actual extraídos del JWT.' })
+  @ApiOperation({
+    summary: 'Obtener perfil del usuario autenticado',
+    description: 'Retorna los datos del usuario actual extraídos del JWT.',
+  })
   @ApiResponse({ status: 200, description: 'Perfil del usuario retornado.' })
   @ApiResponse({ status: 401, description: 'Token inválido o expirado.' })
   getMe(@CurrentUser() user: AuthenticatedUser) {

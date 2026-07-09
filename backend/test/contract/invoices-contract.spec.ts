@@ -29,8 +29,17 @@ describe('Contract: Invoices Response Shape', () => {
   it('debe contener todos los campos requeridos por el frontend', () => {
     const result = mapInvoiceToFrontend(prismaInvoice);
     const requiredFields = [
-      'id', 'folio', 'rutEmisor', 'razonSocial', 'fechaEmision',
-      'fechaRecepcion', 'montoNeto', 'iva', 'total', 'estado', 'diasRestantes',
+      'id',
+      'folio',
+      'rutEmisor',
+      'razonSocial',
+      'fechaEmision',
+      'fechaRecepcion',
+      'montoNeto',
+      'iva',
+      'total',
+      'estado',
+      'diasRestantes',
     ];
     for (const field of requiredFields) {
       expect(result).toHaveProperty(field);
@@ -52,7 +61,9 @@ describe('Contract: Invoices Response Shape', () => {
 
   it('estado debe ser string en español (pendiente|aceptada|rechazada|auto-aceptada)', () => {
     const result = mapInvoiceToFrontend(prismaInvoice);
-    expect(['pendiente', 'aceptada', 'rechazada', 'auto-aceptada']).toContain(result.estado);
+    expect(['pendiente', 'aceptada', 'rechazada', 'auto-aceptada']).toContain(
+      result.estado,
+    );
   });
 
   it('diasRestantes debe ser número', () => {

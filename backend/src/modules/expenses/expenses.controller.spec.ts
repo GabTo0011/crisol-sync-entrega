@@ -38,7 +38,11 @@ describe('ExpensesController', () => {
 
   describe('create', () => {
     it('debe llamar a service.create con el DTO', async () => {
-      const dto = { businessId: 'biz-1', amountTotal: 10000, issueDate: '2026-01-01' } as any;
+      const dto = {
+        businessId: 'biz-1',
+        amountTotal: 10000,
+        issueDate: '2026-01-01',
+      } as any;
       mockService.create.mockResolvedValue({ id: '1', monto: 10000 });
       const result = await controller.create(dto);
 
@@ -51,7 +55,11 @@ describe('ExpensesController', () => {
     it('debe llamar a findAll sin paginación por defecto', async () => {
       mockService.findAll.mockResolvedValue([]);
       const result = await controller.findAll('biz-1', undefined, undefined);
-      expect(mockService.findAll).toHaveBeenCalledWith('biz-1', undefined, undefined);
+      expect(mockService.findAll).toHaveBeenCalledWith(
+        'biz-1',
+        undefined,
+        undefined,
+      );
       expect(result).toEqual([]);
     });
 

@@ -24,7 +24,13 @@ export function buildExpense(overrides: Partial<any> = {}) {
     status: 'REGISTERED',
     createdAt: new Date('2026-05-20'),
     updatedAt: new Date('2026-05-20'),
-    category: { id: 'cat-1', businessId: 'biz-1', name: 'Insumos', createdAt: new Date(), updatedAt: new Date() },
+    category: {
+      id: 'cat-1',
+      businessId: 'biz-1',
+      name: 'Insumos',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
     ...overrides,
   };
 }

@@ -1,4 +1,7 @@
-import { validateDto, expectDtoValid, expectDtoInvalid } from '../../../../test/helpers/dto-validation.helper';
+import {
+  expectDtoValid,
+  expectDtoInvalid,
+} from '../../../../test/helpers/dto-validation.helper';
 import { InviteUserDto } from './invite-user.dto';
 
 describe('InviteUserDto', () => {
@@ -15,33 +18,59 @@ describe('InviteUserDto', () => {
     });
 
     it('debe fallar si falta businessId', async () => {
-      await expectDtoInvalid(InviteUserDto, { name: 'X', email: 'x@x.cl', role: 'admin' }, ['businessId']);
+      await expectDtoInvalid(
+        InviteUserDto,
+        { name: 'X', email: 'x@x.cl', role: 'admin' },
+        ['businessId'],
+      );
     });
 
     it('debe fallar si falta name', async () => {
-      await expectDtoInvalid(InviteUserDto, { businessId: validDto.businessId, email: 'x@x.cl', role: 'admin' }, ['name']);
+      await expectDtoInvalid(
+        InviteUserDto,
+        { businessId: validDto.businessId, email: 'x@x.cl', role: 'admin' },
+        ['name'],
+      );
     });
 
     it('debe fallar si falta email', async () => {
-      await expectDtoInvalid(InviteUserDto, { businessId: validDto.businessId, name: 'X', role: 'admin' }, ['email']);
+      await expectDtoInvalid(
+        InviteUserDto,
+        { businessId: validDto.businessId, name: 'X', role: 'admin' },
+        ['email'],
+      );
     });
 
     it('debe fallar si falta role', async () => {
-      await expectDtoInvalid(InviteUserDto, { businessId: validDto.businessId, name: 'X', email: 'x@x.cl' }, ['role']);
+      await expectDtoInvalid(
+        InviteUserDto,
+        { businessId: validDto.businessId, name: 'X', email: 'x@x.cl' },
+        ['role'],
+      );
     });
   });
 
   describe('validación de tipos', () => {
     it('debe fallar si businessId no es UUID', async () => {
-      await expectDtoInvalid(InviteUserDto, { ...validDto, businessId: 'invalid' }, ['businessId']);
+      await expectDtoInvalid(
+        InviteUserDto,
+        { ...validDto, businessId: 'invalid' },
+        ['businessId'],
+      );
     });
 
     it('debe fallar si email no es válido', async () => {
-      await expectDtoInvalid(InviteUserDto, { ...validDto, email: 'not-an-email' }, ['email']);
+      await expectDtoInvalid(
+        InviteUserDto,
+        { ...validDto, email: 'not-an-email' },
+        ['email'],
+      );
     });
 
     it('debe fallar si name tiene menos de 2 caracteres', async () => {
-      await expectDtoInvalid(InviteUserDto, { ...validDto, name: 'X' }, ['name']);
+      await expectDtoInvalid(InviteUserDto, { ...validDto, name: 'X' }, [
+        'name',
+      ]);
     });
 
     it('debe aceptar role admin', async () => {
@@ -57,7 +86,9 @@ describe('InviteUserDto', () => {
     });
 
     it('debe fallar con role inválido', async () => {
-      await expectDtoInvalid(InviteUserDto, { ...validDto, role: 'OWNER' }, ['role']);
+      await expectDtoInvalid(InviteUserDto, { ...validDto, role: 'OWNER' }, [
+        'role',
+      ]);
     });
   });
 });

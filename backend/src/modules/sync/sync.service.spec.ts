@@ -44,7 +44,12 @@ describe('SyncService', () => {
       const result = await service.processOfflinePayload({
         businessId: 'biz-1',
         items: [
-          { localId: 'local-1', amountTotal: 10000, issueDate: '2026-05-20', categoryName: 'Insumos' },
+          {
+            localId: 'local-1',
+            amountTotal: 10000,
+            issueDate: '2026-05-20',
+            categoryName: 'Insumos',
+          },
           { localId: 'local-2', amountTotal: 20000, issueDate: '2026-05-21' },
         ],
       });

@@ -1,4 +1,7 @@
-import { BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { OcrService } from './ocr.service';
@@ -143,7 +146,9 @@ describe('OcrService', () => {
     });
 
     it('debe inferir Alimentacion para restaurantes', () => {
-      expect(service.inferCategory('Restaurante El Rincón')).toBe('Alimentacion');
+      expect(service.inferCategory('Restaurante El Rincón')).toBe(
+        'Alimentacion',
+      );
     });
 
     it('debe inferir Alimentacion para supermercados', () => {

@@ -19,7 +19,13 @@ describe('Expense Mapper', () => {
     status: 'REGISTERED',
     createdAt: new Date(),
     updatedAt: new Date(),
-    category: { id: 'cat-1', businessId: 'biz-1', name: 'Insumos', createdAt: new Date(), updatedAt: new Date() },
+    category: {
+      id: 'cat-1',
+      businessId: 'biz-1',
+      name: 'Insumos',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
   };
 
   describe('mapExpenseToFrontend', () => {
@@ -49,12 +55,18 @@ describe('Expense Mapper', () => {
     });
 
     it('debe mapear status CANCELLED a "anulada"', () => {
-      const result = mapExpenseToFrontend({ ...prismaExpense, status: 'CANCELLED' });
+      const result = mapExpenseToFrontend({
+        ...prismaExpense,
+        status: 'CANCELLED',
+      });
       expect(result.estado).toBe('anulada');
     });
 
     it('debe mapear status PENDING_REVIEW a "pendiente"', () => {
-      const result = mapExpenseToFrontend({ ...prismaExpense, status: 'PENDING_REVIEW' });
+      const result = mapExpenseToFrontend({
+        ...prismaExpense,
+        status: 'PENDING_REVIEW',
+      });
       expect(result.estado).toBe('pendiente');
     });
 
@@ -64,7 +76,10 @@ describe('Expense Mapper', () => {
     });
 
     it('debe retornar string vacío para comercio si supplierName es null', () => {
-      const result = mapExpenseToFrontend({ ...prismaExpense, supplierName: null });
+      const result = mapExpenseToFrontend({
+        ...prismaExpense,
+        supplierName: null,
+      });
       expect(result.comercio).toBe('');
     });
 

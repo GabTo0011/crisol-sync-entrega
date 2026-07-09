@@ -13,7 +13,10 @@ export class AppController {
 
   @Get('health')
   @ApiTags('Health')
-  @ApiOperation({ summary: 'Health check', description: 'Verifica que el backend está activo.' })
+  @ApiOperation({
+    summary: 'Health check',
+    description: 'Verifica que el backend está activo.',
+  })
   @ApiResponse({ status: 200, description: 'Backend activo.' })
   getHealth() {
     return {

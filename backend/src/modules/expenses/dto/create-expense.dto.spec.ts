@@ -1,4 +1,8 @@
-import { validateDto, expectDtoValid, expectDtoInvalid } from '../../../../test/helpers/dto-validation.helper';
+import {
+  validateDto,
+  expectDtoValid,
+  expectDtoInvalid,
+} from '../../../../test/helpers/dto-validation.helper';
 import { CreateExpenseDto } from './create-expense.dto';
 
 describe('CreateExpenseDto', () => {
@@ -29,45 +33,84 @@ describe('CreateExpenseDto', () => {
     });
 
     it('debe fallar si falta businessId', async () => {
-      await expectDtoInvalid(CreateExpenseDto, { amountTotal: 1000, issueDate: '2026-01-01' }, ['businessId']);
+      await expectDtoInvalid(
+        CreateExpenseDto,
+        { amountTotal: 1000, issueDate: '2026-01-01' },
+        ['businessId'],
+      );
     });
 
     it('debe fallar si falta amountTotal', async () => {
-      await expectDtoInvalid(CreateExpenseDto, { businessId: validDto.businessId, issueDate: '2026-01-01' }, ['amountTotal']);
+      await expectDtoInvalid(
+        CreateExpenseDto,
+        { businessId: validDto.businessId, issueDate: '2026-01-01' },
+        ['amountTotal'],
+      );
     });
 
     it('debe fallar si falta issueDate', async () => {
-      await expectDtoInvalid(CreateExpenseDto, { businessId: validDto.businessId, amountTotal: 1000 }, ['issueDate']);
+      await expectDtoInvalid(
+        CreateExpenseDto,
+        { businessId: validDto.businessId, amountTotal: 1000 },
+        ['issueDate'],
+      );
     });
   });
 
   describe('validación de tipos', () => {
     it('debe fallar si businessId no es UUID', async () => {
-      await expectDtoInvalid(CreateExpenseDto, { ...validDto, businessId: 'not-a-uuid' }, ['businessId']);
+      await expectDtoInvalid(
+        CreateExpenseDto,
+        { ...validDto, businessId: 'not-a-uuid' },
+        ['businessId'],
+      );
     });
 
     it('debe fallar si categoryId no es UUID', async () => {
-      await expectDtoInvalid(CreateExpenseDto, { ...validDto, categoryId: 'invalid' }, ['categoryId']);
+      await expectDtoInvalid(
+        CreateExpenseDto,
+        { ...validDto, categoryId: 'invalid' },
+        ['categoryId'],
+      );
     });
 
     it('debe fallar si amountTotal es negativo', async () => {
-      await expectDtoInvalid(CreateExpenseDto, { ...validDto, amountTotal: -1 }, ['amountTotal']);
+      await expectDtoInvalid(
+        CreateExpenseDto,
+        { ...validDto, amountTotal: -1 },
+        ['amountTotal'],
+      );
     });
 
     it('debe fallar si amountTotal es 0', async () => {
-      await expectDtoInvalid(CreateExpenseDto, { ...validDto, amountTotal: 0 }, ['amountTotal']);
+      await expectDtoInvalid(
+        CreateExpenseDto,
+        { ...validDto, amountTotal: 0 },
+        ['amountTotal'],
+      );
     });
 
     it('debe fallar si amountTotal no es entero', async () => {
-      await expectDtoInvalid(CreateExpenseDto, { ...validDto, amountTotal: 199.5 }, ['amountTotal']);
+      await expectDtoInvalid(
+        CreateExpenseDto,
+        { ...validDto, amountTotal: 199.5 },
+        ['amountTotal'],
+      );
     });
 
     it('debe fallar si issueDate no es fecha válida', async () => {
-      await expectDtoInvalid(CreateExpenseDto, { ...validDto, issueDate: 'no-es-fecha' }, ['issueDate']);
+      await expectDtoInvalid(
+        CreateExpenseDto,
+        { ...validDto, issueDate: 'no-es-fecha' },
+        ['issueDate'],
+      );
     });
 
     it('debe fallar con campos no declarados (forbidNonWhitelisted)', async () => {
-      const errors = await validateDto(CreateExpenseDto, { ...validDto, campoInvalido: 'hack' });
+      const errors = await validateDto(CreateExpenseDto, {
+        ...validDto,
+        campoInvalido: 'hack',
+      });
       expect(errors.length).toBeGreaterThan(0);
     });
   });
