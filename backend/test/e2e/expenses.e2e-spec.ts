@@ -14,7 +14,7 @@ import { PrismaExceptionFilter } from '../../src/common/filters/prisma-exception
 
 describe('E2E: Expenses Flow', () => {
   let app: INestApplication<App>;
-  let accessToken: string;
+  let _accessToken: string;
   let businessId: string;
   let createdExpenseId: string;
 
@@ -47,7 +47,7 @@ describe('E2E: Expenses Flow', () => {
       });
 
     if (registerRes.status === 201) {
-      accessToken = registerRes.body.access_token;
+      _accessToken = registerRes.body.access_token;
       businessId = registerRes.body.user.businessId;
     }
   });

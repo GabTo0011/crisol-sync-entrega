@@ -1,5 +1,4 @@
 import {
-  validateDto,
   expectDtoValid,
   expectDtoInvalid,
 } from '../../../../test/helpers/dto-validation.helper';
