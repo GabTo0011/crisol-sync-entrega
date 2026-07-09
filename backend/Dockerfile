@@ -7,7 +7,7 @@
 # ============================================================
 
 # --- Stage 1: Dependencies ---
-FROM node:20-slim AS deps
+FROM node:22-slim AS deps
 
 WORKDIR /app
 
@@ -21,7 +21,7 @@ COPY prisma.config.ts ./
 RUN npm ci
 
 # --- Stage 2: Build ---
-FROM node:20-slim AS build
+FROM node:22-slim AS build
 
 WORKDIR /app
 
@@ -44,7 +44,7 @@ RUN npx prisma generate
 RUN npm run build
 
 # --- Stage 3: Production ---
-FROM node:20-slim AS production
+FROM node:22-slim AS production
 
 WORKDIR /app
 
